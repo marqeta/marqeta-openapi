@@ -286,7 +286,7 @@ tags:
       Those are used for other purposes, such as KYC identity verification or as shipping addresses for physical cards.
     name: Addresses
   - description: |-
-      Use the `/fundingsources/ach` and `/fundingsources/paymentcard` endpoints to create account holder funding sources.
+      Use the `/fundingsources/ach`, `/fundingsources/ach/partner`, and `/fundingsources/paymentcard` endpoints to create account holder funding sources.
       A funding source enables access to funds outside of the Marqeta platform.
 
       For more information on users and businesses, see <</developer-guides/about-account-holders, About Account Holders>>.
@@ -363,7 +363,7 @@ tags:
       program reserve balances and transactions.
     name: Program Reserve
   - description: |-
-      A program transfer moves funds from an account holder's GPA to a program funding source.
+      A program transfer moves funds from an account holder's general purpose account (GPA) to a program funding source.
       In contrast to a fee transfer, the program transfer amount is specified by the transfer itself and can therefore be set dynamically.
       An auto reload is triggered if the GPA has insufficient funds to cover the transfer amount and auto reload is enabled.
     name: Program Transfers
@@ -456,6 +456,15 @@ tags:
       Webhooks URLs are cached.
       Changes made on your webhook endpoint can take up to one hour to be applied.
     name: Webhooks
+  - description: |-
+      [NOTE]
+      This feature is currently in limited-availability beta and subject to change.
+      To learn more about the beta program for this feature, contact your Marqeta representative.
+
+      Marqeta's credit platform's credit applications feature enables you to create and manage credit account applications and retrieve disclosures that you can show to an applicant during the application process.
+
+      To receive webhook notifications when application transition events occur, see <</core-api/event-types#_credit_application_transition_events, Credit application transition events>> in Event Types.
+    name: Applications
   - description: |-
       Use the account cards endpoints to create and retrieve credit cards that can access the credit line on a <</core-api/credit-accounts, credit account>>.
 
@@ -641,15 +650,6 @@ tags:
 
       To receive a webhook notification when a statement is created, see <</core-api/event-types#_credit_account_statement_event, Credit account statement event>> in Event Types.
     name: Statements
-  - description: |-
-      [NOTE]
-      This feature is currently in limited-availability beta and subject to change.
-      To learn more about the beta program for this feature, contact your Marqeta representative.
-
-      Marqeta's credit platform's credit applications feature enables you to create and manage credit account applications and retrieve disclosures that you can show to an applicant during the application process.
-
-      To receive webhook notifications when application transition events occur, see <</core-api/event-types#_credit_application_transition_events, Credit application transition events>> in Event Types.
-    name: Applications
   - description: |-
       Use the `/credit/rewardprograms/{token}` endpoint to manage reward programs and track reward accruals on a credit account.
       The configurations for a reward program are defined in the <</developer-guides/credit-programs-dashboard#_creating_a_reward_policy, reward policy>> on the account's associated bundle.
@@ -3889,6 +3889,7 @@ paths:
                   created_time: 2022-04-27T19:25:55Z
                   digital_wallet_tokenization:
                     provisioning_controls:
+                      dwt_use_card_status_during_auth: false
                       in_app_provisioning:
                         address_verification:
                           validate: true
@@ -4062,6 +4063,7 @@ paths:
                   digital_wallet_tokenization:
                     card_art_id: myCardArt01
                     provisioning_controls:
+                      dwt_use_card_status_during_auth: false
                       in_app_provisioning:
                         address_verification:
                           validate: true
@@ -4232,6 +4234,7 @@ paths:
                   digital_wallet_tokenization:
                     card_art_id: myCardArt01
                     provisioning_controls:
+                      dwt_use_card_status_during_auth: false
                       in_app_provisioning:
                         address_verification:
                           validate: true
@@ -7046,23 +7049,35 @@ paths:
                 count: 2
                 data:
                   - account_token: account_token_1
-                    created_time: 2022-08-23T11:25:34.342Z
-                    impact_time: 2022-08-23T11:25:34.002Z
+                    bucket_count: 0
+                    created_time: 2023-03-28T00:52:17.566Z
+                    current_due: 221.53
+                    impact_time: 2022-12-02T23:13:48.281Z
                     is_rolled_back: false
+                    oldest_payment_due_date: 2023-01-01T04:59:59.999Z
                     original_status: DELINQUENT
                     status: CURRENT
                     token: delinquency_transition_token_2
+                    total_due: 221.53
+                    total_past_due: 0
                     transition_trigger_reason: PAYMENT
-                    transition_trigger_time: 2022-08-25T11:25:34.002Z
+                    transition_trigger_time: 2022-12-02T23:13:48.284Z
+                    updated_time: 2023-03-28T00:52:17.566Z
                   - account_token: account_token_1
-                    created_time: 2022-08-01T04:16:33.302Z
-                    impact_time: 2022-08-01T04:16:33.011Z
+                    bucket_count: 1
+                    created_time: 2023-03-28T00:52:17.398Z
+                    current_due: 231.35
+                    impact_time: 2022-12-01T04:59:59.999Z
                     is_rolled_back: false
+                    oldest_payment_due_date: 2022-12-01T04:59:59.999Z
                     original_status: CURRENT
                     status: DELINQUENT
                     token: delinquency_transition_token_1
-                    transition_trigger_reason: PAYMENT_VOID
-                    transition_trigger_time: 2022-08-13T11:25:34.002Z
+                    total_due: 271.53
+                    total_past_due: 40.18
+                    transition_trigger_reason: STATEMENT_GENERATION
+                    transition_trigger_time: 2022-12-01T08:01:29.201Z
+                    updated_time: 2023-03-28T00:52:17.398Z
                 end_index: 1
                 is_more: false
                 start_index: 0
@@ -7114,14 +7129,20 @@ paths:
             application/json:
               example:
                 account_token: account_token_1
-                created_time: 2022-08-23T11:25:34.342Z
-                impact_time: 2022-08-23T11:25:34.002Z
+                bucket_count: 4
+                created_time: 2023-05-01T09:23:36.910Z
+                current_due: 41.58
+                impact_time: 2023-05-01T03:59:59.999Z
                 is_rolled_back: false
+                oldest_payment_due_date: 2023-02-01T04:59:59.999Z
                 original_status: DELINQUENT
-                status: CURRENT
+                status: DELINQUENT
                 token: delinquency_transition_token_1
-                transition_trigger_reason: PAYMENT
-                transition_trigger_time: 2022-08-25T11:25:34.002Z
+                total_due: 201.58
+                total_past_due: 160
+                transition_trigger_reason: STATEMENT_GENERATION
+                transition_trigger_time: 2023-05-01T09:23:36.046Z
+                updated_time: 2023-05-01T09:23:36.910Z
               schema:
                 $ref: '#/components/schemas/DelinquencyTransitionResponse'
           description: Expected response to a valid request
@@ -10995,13 +11016,14 @@ paths:
             example:
               any_non_taxable_income: false
               bundle_token: bundle_token_1111
-              e_disclosure_tracking_token: tracking_token_X3NoybmxnaCIsEtQ0mZpbGZ
+              e_disclosure_tracking_token: tracking_token_X3NoybmxsEtQ0mZ
               monthly_mortgage_or_rent: 1200
+              prequalified_offer_pre_terms_tracking_token: tracking_token_D0VufJpbGZhdC
               primary_income_source: SELF_EMPLOYED
-              privacy_policy_tracking_token: tracking_token_ImlzcyI6ImxJQ1kiLD0VufJ
+              privacy_policy_tracking_token: tracking_token_ImlzcyI6ImxJQ1k
               residence_type: OWN
-              rewards_disclosure_pre_terms_tracking_token: tracking_token_ZjNmZ0MzIyNDYsImlhdCI6M
-              soct_tracking_token: tracking_token_HAiOjE2Y1NzIyMjYri3fPDg
+              rewards_disclosure_pre_terms_tracking_token: tracking_token_ZjNmZ0MzIyNDYs
+              soct_tracking_token: tracking_token_HAiOjE2Y1Nri3fPDg
               token: application_token_1111
               total_annual_income: 95000
               user_token: user_token_1111
@@ -11028,6 +11050,7 @@ paths:
                 state: CREATED
                 token: application_token_1111
                 total_annual_income: 95000
+                type: CREDIT_DECISION
                 updated_date: 2022-07-07T19:47:46.268Z
                 user_token: user_token_1111
               schema:
@@ -11401,6 +11424,7 @@ paths:
                 state: APPROVED
                 token: application_token_1111
                 total_annual_income: 95000
+                type: CREDIT_DECISION
                 updated_date: 2022-07-07T19:48:16Z
                 user_token: user_token_1111
               schema:
@@ -20112,11 +20136,11 @@ paths:
                 account_suffix: '4321'
                 account_type: savings
                 active: true
-                created_time: 2021-02-26T18:46:06Z
-                date_sent_for_verification: 2021-02-27T07:36:05Z
-                date_verified: 2021-02-27T11:03:45Z
+                created_time: 2023-02-26T18:46:06Z
+                date_sent_for_verification: 2023-02-27T07:36:05Z
+                date_verified: 2023-02-27T11:03:45Z
                 is_default_account: false
-                last_modified_time: 2021-03-26T12:44:02Z
+                last_modified_time: 2023-03-26T12:44:02Z
                 name_on_account: Jane Doe
                 token: my_user_01_fundingsource_token_01
                 user_token: my_user_01
@@ -20143,7 +20167,20 @@ paths:
         - Account Holder Funding Sources
   /fundingsources/ach/partner:
     post:
-      description: TBD
+      description: |-
+        Create an ACH funding source for an existing account holder by using a third-party partner to handle account validation and provide PII account data.
+        Because you don't handle any personally identifiable information (PII) yourself, using a third party when creating the funding source enables you to bypass the regulatory and compliance measures related to capturing, storing, and transmitting PII.
+
+        With this endpoint, you can create a US-based funding source—either a checking account or a savings account—for a program or user without passing bank account details such as the account number or routing number to Marqeta.
+        Instead, validating account data and account verification is handled by the third-party partner you specify, and a secure token (i.e., a Plaid `processor_token`) is shared across partners.
+        By using a secure account verification platform to provide immediate verification, you shorten the wait time until the ACH funding source is ready and avoid managing the microdeposit-based account verification process.
+
+        To create an ACH funding source for an existing account holder without validating through a third party, see <</core-api/account-holder-funding-sources#postFundingsourcesAch, Create ACH source>>.
+
+        [NOTE]
+        This endpoint assumes that you already have established a relationship with both Marqeta and the third-party account validation partner you want to use.
+        In addition, you must explicitly authorize the sharing of information with the third-party partner, and enable Marqeta as a processor for your integration.
+        For more information, contact your Marqeta representative.
       operationId: postFundingsourcesAchPartner
       requestBody:
         content:
@@ -20165,11 +20202,11 @@ paths:
                 account_suffix: '4321'
                 account_type: savings
                 active: true
-                created_time: 2021-02-26T18:46:06Z
-                date_sent_for_verification: 2021-02-27T07:36:05Z
-                date_verified: 2021-02-27T11:03:45Z
+                created_time: 2023-02-26T18:46:06Z
+                date_sent_for_verification: 2023-02-27T07:36:05Z
+                date_verified: 2023-02-27T11:03:45Z
                 is_default_account: false
-                last_modified_time: 2021-03-26T12:44:02Z
+                last_modified_time: 2023-03-26T12:44:02Z
                 name_on_account: Jane Doe
                 partner: PLAID
                 partner_account_link_reference_token: processor-sandbox-reference-token
@@ -20193,42 +20230,7 @@ paths:
           content: {
             }
           description: Server error
-      summary: Create ACH source
-      tags:
-        - Account Holder Funding Sources
-  /fundingsources/ach/partner/{funding_source_token}/balance:
-    get:
-      description: Placeholder description for unknown new endpoint.
-      operationId: getAchPartnerLinkedFundingSourceBalance
-      parameters:
-        - description: Funding source token
-          explode: false
-          in: path
-          name: funding_source_token
-          required: true
-          schema:
-            type: string
-          style: simple
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/LinkedAccountBalanceResponse'
-          description: Success
-        '400':
-          content: {
-            }
-          description: Bad request
-        '404':
-          content: {
-            }
-          description: Not found
-        '500':
-          content: {
-            }
-          description: Server error
-      summary: Retrieve linked funding source balance
+      summary: Create ACH source via a partner integration
       tags:
         - Account Holder Funding Sources
   /fundingsources/ach/{funding_source_token}:
@@ -20237,10 +20239,13 @@ paths:
         Retrieve a specific ACH funding source.
 
         The response body returns details about the account, including the verification status.
-        Possible ACH verification status values are: `VERIFICATION_PENDING`, `ACH_VERIFIED`, and `ACH_FAILED`.
+        Possible ACH verification status values are: `ACH_FAILED`, `ACH_VERIFIED`, and `VERIFICATION_PENDING`.
       operationId: getFundingsourcesAchFundingsourcetoken
       parameters:
-        - description: Unique identifier of the funding source.
+        - description: |-
+            Unique identifier of the funding source.
+
+            Send a `GET` request to `/fundingsources/user/{user_token}` to retrieve existing funding source tokens for a user or to `/fundingsources/business/{business_token}` to retrieve existing funding source tokens for a business.
           explode: false
           in: path
           name: funding_source_token
@@ -20256,11 +20261,11 @@ paths:
                 account_suffix: '4321'
                 account_type: savings
                 active: true
-                created_time: 2021-02-26T18:46:06Z
-                date_sent_for_verification: 2021-02-27T18:00:00Z
-                date_verified: 2021-02-27T18:15:00Z
+                created_time: 2023-02-26T18:46:06Z
+                date_sent_for_verification: 2023-02-27T18:00:00Z
+                date_verified: 2023-02-27T18:15:00Z
                 is_default_account: false
-                last_modified_time: 2021-03-12T04:58:46Z
+                last_modified_time: 2023-03-12T04:58:46Z
                 name_on_account: Jane Doe
                 token: my_user_01_fundingsource_token_01
                 user_token: my_user_01
@@ -20297,7 +20302,10 @@ paths:
         The `active` field is the only field you can update.
       operationId: putFundingsourcesAchFundingsourcetoken
       parameters:
-        - description: Unique identifier of the funding source.
+        - description: |-
+            Unique identifier of the funding source.
+
+            Send a `GET` request to `/fundingsources/user/{user_token}` to retrieve existing funding source tokens for a user or to `/fundingsources/business/{business_token}` to retrieve existing funding source tokens for a business.
           explode: false
           in: path
           name: funding_source_token
@@ -20323,11 +20331,11 @@ paths:
                 account_suffix: '4321'
                 account_type: savings
                 active: false
-                created_time: 2022-01-26T20:03:05Z
-                date_sent_for_verification: 2022-01-27T18:00:00Z
-                date_verified: 2022-01-27T18:15:00Z
+                created_time: 2023-01-26T20:03:05Z
+                date_sent_for_verification: 2023-01-27T18:00:00Z
+                date_verified: 2023-01-27T18:15:00Z
                 is_default_account: false
-                last_modified_time: 2022-02-26T20:03:05Z
+                last_modified_time: 2023-02-26T20:03:05Z
                 name_on_account: Jane Doe
                 token: my_user_01_fundingsource_token_01
                 user_token: my_user_01
@@ -20355,7 +20363,10 @@ paths:
         In production, verification amounts are retrieved from the bank statement of the account holder.
       operationId: getFundingsourcesAchFundingsourcetokenVerificationamounts
       parameters:
-        - description: Unique identifier of the funding source.
+        - description: |-
+            Unique identifier of the funding source.
+
+            Send a `GET` request to `/fundingsources/user/{user_token}` to retrieve existing funding source tokens for a user or to `/fundingsources/business/{business_token}` to retrieve existing funding source tokens for a business.
           explode: false
           in: path
           name: funding_source_token
@@ -20421,10 +20432,10 @@ paths:
                 business_token: my_business_01
                 city: Berkeley
                 country: USA
-                created_time: 2022-02-20T20:04:13Z
+                created_time: 2023-02-20T20:04:13Z
                 first_name: Jane
                 is_default_address: true
-                last_modified_time: 2022-02-20T20:04:13Z
+                last_modified_time: 2023-02-20T20:04:13Z
                 last_name: Doe
                 phone: '5104444444'
                 postal_code: '94705'
@@ -20456,7 +20467,10 @@ paths:
         This endpoint supports <</core-api/field-filtering, field filtering>>.
       operationId: getFundingsourcesAddressesBusinessBusinesstoken
       parameters:
-        - description: Unique identifier of the business account holder.
+        - description: |-
+            Unique identifier of the business account holder.
+
+            Send a `GET` request to `/businesses` to retrieve business tokens.
           explode: false
           in: path
           name: business_token
@@ -20486,10 +20500,10 @@ paths:
                     business_token: my_business_01
                     city: Berkeley
                     country: USA
-                    created_time: 2022-02-26T21:34:42Z
+                    created_time: 2023-02-26T21:34:42Z
                     first_name: Jane
                     is_default_address: true
-                    last_modified_time: 2022-02-27T18:55:59Z
+                    last_modified_time: 2023-02-27T18:55:59Z
                     last_name: Doe
                     phone: '5104444444'
                     postal_code: '94705'
@@ -20501,10 +20515,10 @@ paths:
                     business_token: my_business_01
                     city: Berkeley
                     country: USA
-                    created_time: 2022-02-25T19:48:30Z
+                    created_time: 2023-02-25T19:48:30Z
                     first_name: Jane
                     is_default_address: false
-                    last_modified_time: 2022-03-25T10:17:38Z
+                    last_modified_time: 2023-03-25T10:17:38Z
                     last_name: Doe
                     phone: '5104444444'
                     postal_code: '94705'
@@ -20569,10 +20583,10 @@ paths:
                     business_token: my_user_01
                     city: Berkeley
                     country: USA
-                    created_time: 2022-02-27T21:34:42Z
+                    created_time: 2023-02-27T21:34:42Z
                     first_name: Jane
                     is_default_address: true
-                    last_modified_time: 2022-02-28T18:55:59Z
+                    last_modified_time: 2023-02-28T18:55:59Z
                     last_name: Doe
                     phone: '5104444444'
                     postal_code: '94705'
@@ -20584,10 +20598,10 @@ paths:
                     business_token: my_user_01
                     city: Berkeley
                     country: USA
-                    created_time: 2022-02-25T19:48:30Z
+                    created_time: 2023-02-25T19:48:30Z
                     first_name: Jane
                     is_default_address: false
-                    last_modified_time: 2022-03-25T19:48:30Z
+                    last_modified_time: 2023-03-25T19:48:30Z
                     last_name: Doe
                     phone: '5104444444'
                     postal_code: '94705'
@@ -20638,10 +20652,10 @@ paths:
                 business_token: my_business_01
                 city: Berkeley
                 country: USA
-                created_time: 2022-02-20T20:04:13Z
+                created_time: 2023-02-20T20:04:13Z
                 first_name: Jane
                 is_default_address: true
-                last_modified_time: 2022-02-20T20:04:13Z
+                last_modified_time: 2023-02-20T20:04:13Z
                 last_name: Doe
                 phone: '5104444444'
                 postal_code: '94705'
@@ -20698,10 +20712,10 @@ paths:
                 business_token: my_business_01
                 city: Berkeley
                 country: USA
-                created_time: 2022-02-20T20:04:13Z
+                created_time: 2023-02-20T20:04:13Z
                 first_name: Jane
                 is_default_address: true
-                last_modified_time: 2022-02-28T16:00:00Z
+                last_modified_time: 2023-02-28T16:00:00Z
                 last_name: Doe
                 phone: '5104444444'
                 postal_code: '94705'
@@ -20719,7 +20733,7 @@ paths:
           content: {
             }
           description: Server error
-      summary: Updates the account holder address for a funding source
+      summary: Update address
       tags:
         - Addresses
   /fundingsources/business/{business_token}:
@@ -20730,7 +20744,10 @@ paths:
         This endpoint supports <</core-api/field-filtering, field filtering>>.
       operationId: getFundingsourcesBusinessBusinesstoken
       parameters:
-        - description: Unique identifier of the business account holder.
+        - description: |-
+            Unique identifier of the business account holder.
+
+            Send a `GET` request to `/businesses` to retrieve business tokens.
           explode: false
           in: path
           name: business_token
@@ -20768,10 +20785,10 @@ paths:
                   - account_suffix: '4113'
                     account_type: corporate
                     active: true
-                    created_time: 2022-02-26T21:26:13Z
+                    created_time: 2023-02-26T21:26:13Z
                     exp_date: '1227'
                     is_default_account: true
-                    last_modified_time: 2022-02-26T21:26:13Z
+                    last_modified_time: 2023-02-26T21:26:13Z
                     token: my_paymentcard_funding_source_01
                     type: paymentcard
                     user_token: my_business_01
@@ -20803,9 +20820,6 @@ paths:
         This endpoint returns the card type and the last four digits of the card, and then sets the `active_ field` to `true`.
 
         Marqeta retains only a tokenized representation of the card number.
-
-        [NOTE]
-        This endpoint is only available to its current users.
       operationId: postFundingsourcesPaymentcard
       requestBody:
         content:
@@ -20829,10 +20843,10 @@ paths:
                 account_suffix: '6557'
                 account_type: corporate
                 active: true
-                created_time: 2022-02-26T20:00:00Z
+                created_time: 2023-02-26T20:00:00Z
                 exp_date: '1227'
                 is_default_account: true
-                last_modified_time: 2022-02-26T21:00:00Z
+                last_modified_time: 2023-02-26T21:00:00Z
                 token: my_paymentcard_01
                 type: paymentcard
                 user_token: my_user_01
@@ -20856,14 +20870,12 @@ paths:
         - Account Holder Funding Sources
   /fundingsources/paymentcard/{funding_source_token}:
     get:
-      description: |-
-        Retrieve a specific payment card funding source.
-
-        [NOTE]
-        This endpoint is only available to its current users.
+      description: Retrieve a specific payment card funding source.
       operationId: getFundingsourcesPaymentcardFundingsourcetoken
       parameters:
-        - description: Unique identifier of the funding source.
+        - description: |-
+            U|- Unique identifier of the funding source.
+            Send a `GET` request to `/fundingsources/user/{user_token}` to retrieve existing funding source tokens for a user or to `/fundingsources/business/{business_token}` to retrieve existing funding source tokens for a business.
           explode: false
           in: path
           name: funding_source_token
@@ -20879,10 +20891,10 @@ paths:
                 account_suffix: '6557'
                 account_type: corporate
                 active: true
-                created_time: 2022-02-26T20:00:00Z
+                created_time: 2023-02-26T20:00:00Z
                 exp_date: '1227'
                 is_default_account: true
-                last_modified_time: 2022-02-26T21:00:00Z
+                last_modified_time: 2023-02-26T21:00:00Z
                 token: my_paymentcard_01
                 type: paymentcard
                 user_token: my_user_01
@@ -20907,13 +20919,13 @@ paths:
     put:
       description: |-
         Update a payment card funding source.
-        Only the values of parameters in the request are modified; all others are left unchanged.
-
-        [NOTE]
-        This endpoint is only available to its current users.
+        Only the values of parameters specified in the request are modified; all others are left unchanged.
       operationId: putFundingsourcesFundingsourcetoken
       parameters:
-        - description: Unique identifier of the funding source.
+        - description: |-
+            Unique identifier of the funding source.
+
+            Send a `GET` request to `/fundingsources/user/{user_token}` to retrieve existing funding source tokens for a user or to `/fundingsources/business/{business_token}` to retrieve existing funding source tokens for a business.
           explode: false
           in: path
           name: funding_source_token
@@ -20939,10 +20951,10 @@ paths:
                 account_suffix: '6557'
                 account_type: DISCOVER
                 active: true
-                created_time: 2022-02-26T20:00:00Z
+                created_time: 2023-02-26T20:00:00Z
                 exp_date: '1227'
                 is_default_account: false
-                last_modified_time: 2022-02-26T21:00:00Z
+                last_modified_time: 2023-02-26T21:00:00Z
                 token: my_paymentcard_01
                 type: paymentcard
                 user_token: my_user_01
@@ -20981,8 +20993,8 @@ paths:
               example:
                 account: 12.003.001.000147
                 active: true
-                created_time: 2022-02-25T20:46:04Z
-                last_modified_time: 2022-02-25T20:46:04Z
+                created_time: 2023-02-25T20:46:04Z
+                last_modified_time: 2023-02-25T20:46:04Z
                 name: my_programfundingsource_name
                 token: my_programfundingsource_token
               schema:
@@ -21108,9 +21120,9 @@ paths:
                 account_suffix: '1156'
                 account_type: checking
                 active: true
-                created_time: 2022-02-27T18:40:27Z
+                created_time: 2023-02-27T18:40:27Z
                 is_default_account: true
-                last_modified_time: 2022-02-27T18:40:27Z
+                last_modified_time: 2023-02-27T18:40:27Z
                 name_on_account: John Doe
                 token: my_program_ach_source_token
                 verification_status: ACH_VERIFIED
@@ -21152,8 +21164,8 @@ paths:
               example:
                 account: 12.003.001.000147
                 active: true
-                created_time: 2022-02-25T20:46:04Z
-                last_modified_time: 2022-02-25T20:46:04Z
+                created_time: 2023-02-25T20:46:04Z
+                last_modified_time: 2023-02-25T20:46:04Z
                 name: my_programfundingsource_name
                 token: my_programfundingsource_token
               schema:
@@ -21200,8 +21212,8 @@ paths:
               example:
                 account: 12.003.001.000147
                 active: true
-                created_time: 2022-02-25T20:46:04Z
-                last_modified_time: 2022-02-25T20:50:00Z
+                created_time: 2023-02-25T20:46:04Z
+                last_modified_time: 2023-02-25T20:50:00Z
                 name: your_programfundingsource_name
                 token: my_programfundingsource_token
               schema:
@@ -21222,7 +21234,7 @@ paths:
     post:
       description: |-
         Creates a program gateway funding source.
-        A program gateway funding source is a transaction relay that, when configured, allows you to approve or decline transactions in real time.
+        A program gateway funding source is a transaction relay that allows you to approve or decline transactions in real time.
       operationId: postFundingsourcesProgramgateway
       requestBody:
         content:
@@ -21245,12 +21257,12 @@ paths:
                 active: true
                 basic_auth_password: my_20-to-100-character_password
                 basic_auth_username: my_username
-                created_time: 2022-02-28T20:00:00Z
+                created_time: 2023-02-28T20:00:00Z
                 custom_header:
                   my_header_name_1: my_value_1
                   my_header_name_2: my_value_2
                   my_header_name_3: my_value_3
-                last_modified_time: 2022-02-28T20:00:00Z
+                last_modified_time: 2023-02-28T20:00:00Z
                 name: my_pgfs_name
                 timeout_millis: 3000
                 token: my_pgfs_token
@@ -21309,12 +21321,12 @@ paths:
                 active: true
                 basic_auth_password: my_20-to-100-character_password
                 basic_auth_username: my_username
-                created_time: 2022-02-28T20:00:00Z
+                created_time: 2023-02-28T20:00:00Z
                 custom_header:
                   my_header_name_1: my_value_1
                   my_header_name_2: my_value_2
                   my_header_name_3: my_value_3
-                last_modified_time: 2022-02-28T20:00:00Z
+                last_modified_time: 2023-02-28T20:00:00Z
                 name: my_pgfs_name
                 timeout_millis: 3000
                 token: my_pgfs_token
@@ -21357,12 +21369,12 @@ paths:
                 active: true
                 basic_auth_password: my_20-to-100-character_password
                 basic_auth_username: my_username
-                created_time: 2022-02-28T20:00:00Z
+                created_time: 2023-02-28T20:00:00Z
                 custom_header:
                   my_header_name_1: my_value_1
                   my_header_name_2: my_value_2
                   my_header_name_3: my_value_3
-                last_modified_time: 2022-02-28T20:00:00Z
+                last_modified_time: 2023-02-28T20:00:00Z
                 name: my_pgfs_name
                 timeout_millis: 3000
                 token: my_pgfs_token
@@ -21385,7 +21397,7 @@ paths:
         - Program Gateway Funding Sources
     put:
       description: |-
-        Updates a program gateway funding source.
+        Update a program gateway funding source.
         Only the values of parameters specified in the request are modified; all others are left unchanged.
       operationId: putFundingsourcesProgramgatewayToken
       parameters:
@@ -21417,12 +21429,12 @@ paths:
                 active: false
                 basic_auth_password: my_20-to-100-character_password
                 basic_auth_username: my_username
-                created_time: 2022-02-28T20:00:00Z
+                created_time: 2023-02-28T20:00:00Z
                 custom_header:
                   my_header_name_1: my_value_1
                   my_header_name_2: my_value_2
                   my_header_name_3: my_value_3
-                last_modified_time: 2022-02-28T20:00:00Z
+                last_modified_time: 2023-02-28T20:00:00Z
                 name: my_pgfs_name
                 timeout_millis: 3000
                 token: my_pgfs_token
@@ -21460,7 +21472,7 @@ paths:
             type: string
           style: simple
         - description: |-
-            Type of funding source to retrieve, ACH or payment card.
+            Type of funding source to retrieve: ACH or payment card.
             Leave unspecified to return both types.
           explode: true
           in: query
@@ -21489,20 +21501,20 @@ paths:
                   - account_suffix: '4113'
                     account_type: corporate
                     active: true
-                    created_time: 2022-02-26T20:03:05Z
+                    created_time: 2023-02-26T20:03:05Z
                     exp_date: '1227'
                     is_default_account: true
-                    last_modified_time: 2022-02-26T20:03:05Z
+                    last_modified_time: 2023-02-26T20:03:05Z
                     token: jane_doe_paymentcard_01
                     type: paymentcard
                     user_token: my_user_01
                   - account_suffix: '4321'
                     account_type: savings
                     active: false
-                    created_time: 2022-02-26T20:03:05Z
-                    date_sent_for_verification: 2022-02-27T23:27:58Z
+                    created_time: 2023-02-26T20:03:05Z
+                    date_sent_for_verification: 2023-02-27T23:27:58Z
                     is_default_account: false
-                    last_modified_time: 2022-02-26T20:03:05Z
+                    last_modified_time: 2023-02-26T20:03:05Z
                     name_on_account: Jane Doe
                     token: jane_doe_ach_token
                     type: ach
@@ -21538,7 +21550,10 @@ paths:
         Note that the first funding source you create is automatically set as the default (`is_default_source=true`).
       operationId: putFundingsourcesFundingsourcetokenDefault
       parameters:
-        - description: Unique identifier of the funding source.
+        - description: |-
+            Unique identifier of the funding source.
+
+            Send a `GET` request to `/fundingsources/user/{user_token}` to retrieve existing funding source tokens for a user or to `/fundingsources/business/{business_token}` to retrieve existing funding source tokens for a business.
           explode: false
           in: path
           name: funding_source_token
@@ -21554,10 +21569,10 @@ paths:
                 account_suffix: '4321'
                 account_type: corporate
                 active: true
-                created_time: 2022-02-28T20:00:00Z
+                created_time: 2023-02-28T20:00:00Z
                 exp_date: '1227'
                 is_default_account: true
-                last_modified_time: 2022-02-28T20:00:00Z
+                last_modified_time: 2023-02-28T20:00:00Z
                 token: jane_doe_paymentcard_token
                 type: paymentcard
                 user_token: my_user_01
@@ -21572,7 +21587,7 @@ paths:
           content: {
             }
           description: Server error
-      summary: Configures a default funding source
+      summary: Set default source
       tags:
         - Account Holder Funding Sources
   /gpaorders:
@@ -23681,7 +23696,7 @@ paths:
       description: |-
         Use this endpoint to list all program transfers.
 
-        To narrow your result set to program transfers of a particular type or that are associated with a particular account holder, include the appropriate parameters from the following Query Parameters table.
+        To narrow your result set to program transfers of a particular type or that are associated with a particular account holder, include the appropriate parameters from the following URL Query Parameters table.
         This endpoint also supports <</core-api/field-filtering, field filtering>>, <</core-api/sorting-and-pagination, pagination>>, and <</core-api/sorting-and-pagination, sorting>>.
       operationId: getProgramtransfers
       parameters:
@@ -23750,7 +23765,7 @@ paths:
           schema:
             type: string
           style: form
-        - description: Unique identifier of program transfer type to retrieve.
+        - description: Unique identifier of the program transfer type to retrieve.
           explode: true
           in: query
           name: type_token
@@ -23769,7 +23784,7 @@ paths:
                   created_time: 2023-03-11T21:02:45Z
                   currency_code: USD
                   memo: This is my program transfer
-                  tags: my, tags
+                  tags: tag1, tag2, tag3
                   token: my_program_transfer_02
                   transaction_token: '170'
                   type_token: my_program_transfer_type_01
@@ -23796,10 +23811,10 @@ paths:
         Use this endpoint to create a program transfer.
         Add the program transfer details to the body of the request in link:http://www.json.org/[JSON, window="_blank"] format.
 
-        Include either `user_token` or `business_token` in the message body to specify the account holder whose GPA will be debited by the program transfer.
+        Include either `user_token` or `business_token` in the message body to specify the account holder whose general purpose account (GPA) will be debited by the program transfer.
         The user or business must already exist.
 
-        A program transfer is an all-or-nothing operation.
+        [NOTE]
         If the GPA has insufficient funds to cover both the amount of the program transfer and all attached fees, then no funds are transferred.
       operationId: postProgramtransfers
       requestBody:
@@ -23809,7 +23824,7 @@ paths:
               amount: 1.0
               currency_code: USD
               memo: This is my program transfer
-              tags: my, tags
+              tags: tag1, tag2, tag3
               token: my_program_transfer_01
               type_token: my_program_transfer_type_01
               user_token: my_user_01
@@ -23825,7 +23840,7 @@ paths:
                 created_time: 2023-03-11T20:58:30Z
                 currency_code: USD
                 memo: This is my program transfer
-                tags: my, tags
+                tags: tag1, tag2, tag3
                 token: my_program_transfer_01
                 transaction_token: '169'
                 type_token: my_program_transfer_type_01
@@ -23853,7 +23868,7 @@ paths:
           content: {
             }
           description: Server error
-      summary: Transfers to a program funding source
+      summary: Create program transfer
       tags:
         - Program Transfers
   /programtransfers/types:
@@ -23918,7 +23933,7 @@ paths:
                   last_modified_time: 2023-03-15T19:53:23Z
                   memo: This is my other program transfer type.
                   program_funding_source_token: pfs_test_01
-                  tags: my, tags
+                  tags: tag1, tag2, tag3
                   token: my_program_transfer_type_02
                 end_index: 1
                 is_more: false
@@ -23951,7 +23966,7 @@ paths:
             example:
               memo: This is my program transfer type.
               program_funding_source_token: my_pfs_01
-              tags: my, tags
+              tags: tag1, tag2, tag3
               token: my_program_transfer_type_01
             schema:
               $ref: '#/components/schemas/program_transfer_type_request'
@@ -23965,7 +23980,7 @@ paths:
                 last_modified_time: 2023-03-15T19:18:50Z
                 memo: This is my program transfer type.
                 program_funding_source_token: my_pfs_01
-                tags: my, tags
+                tags: tag1, tag2, tag3
                 token: my_program_transfer_type_01
               schema:
                 $ref: '#/components/schemas/program_transfer_type_response'
@@ -23996,7 +24011,7 @@ paths:
         Include the `type_token` path parameter to indicate the program transfer type to return.
       operationId: getProgramtransfersTypesTypetoken
       parameters:
-        - description: Unique identifier of the program transfer type
+        - description: Unique identifier of the program transfer type.
           explode: false
           in: path
           name: type_token
@@ -24013,7 +24028,7 @@ paths:
                 last_modified_time: 2023-03-15T19:18:50Z
                 memo: This is my program transfer type.
                 program_funding_source_token: pfs_test_01
-                tags: my, tags
+                tags: tag1, tag2, tag3
                 token: my_program_transfer_type_01
               schema:
                 $ref: '#/components/schemas/program_transfer_type_response'
@@ -24041,7 +24056,7 @@ paths:
         Only values of parameters in the request are modified; all others are left unchanged.
       operationId: putProgramtransfersTypesTypetoken
       parameters:
-        - description: Unique identifier of the program transfer type
+        - description: Unique identifier of the program transfer type.
           explode: false
           in: path
           name: type_token
@@ -24067,7 +24082,7 @@ paths:
                 last_modified_time: 2023-03-15T19:58:33Z
                 memo: Update program funding source.
                 program_funding_source_token: pfs_test_02
-                tags: my, tags
+                tags: tag1, tag2, tag3
                 token: my_program_transfer_type_02
               schema:
                 $ref: '#/components/schemas/program_transfer_type_response'
@@ -24111,7 +24126,7 @@ paths:
                 created_time: 2023-03-11T21:02:45Z
                 currency_code: USD
                 memo: This is my program transfer
-                tags: my, tags
+                tags: tag1, tag2, tag3
                 token: my_program_transfer_02
                 transaction_token: '170'
                 type_token: my_program_transfer_type_01
@@ -29842,6 +29857,12 @@ components:
           maxLength: 36
           type: string
       type: object
+    ApplicationType:
+      description: Type of application.
+      enum:
+        - CREDIT_DECISION
+        - PREQUALIFICATION
+      type: string
     ApplicationsResponse:
       properties:
         account_token:
@@ -29904,10 +29925,23 @@ components:
           type: string
         error_details:
           $ref: '#/components/schemas/ErrorDetailsResponse'
+        meta_data:
+          description: Customer-defined additional information about the application.
+          type: object
         monthly_mortgage_or_rent:
           description: Monthly amount of the mortgage or rent that the user currently
             pays.
           type: number
+        offer_id:
+          description: Unique identifier of the offer for a pre-screened applicant.
+          type: string
+        prequalified_offer_pre_terms_accepted_at:
+          description: |-
+            Date and time when Marqeta accepted the Pre-qualified Offer Pre-terms, in UTC.
+
+            Returned if the user accepted their approved application.
+          format: date-time
+          type: string
         primary_income_source:
           description: Whether the primary income source comes from the user being
             employed, unemployed, self-employment, or another situation.
@@ -29968,6 +30002,8 @@ components:
         total_annual_income:
           description: The total amount of the user's annual income.
           type: number
+        type:
+          $ref: '#/components/schemas/ApplicationType'
         updated_date:
           description: Date and time when the application was last updated on the
             Marqeta platform, in UTC.
@@ -29978,7 +30014,6 @@ components:
             credit account.
           type: string
       required:
-        - account_token
         - bundle_token
         - created_date
         - e_disclosure_accepted_at
@@ -29987,6 +30022,7 @@ components:
         - soct_accepted_at
         - state
         - token
+        - type
         - updated_date
         - user_token
       type: object
@@ -31697,6 +31733,9 @@ components:
 
             This is the `tracking_token` returned in the `E_DISCLOSURE` object when sending a `GET` request to the `/credit/applications/files` endpoint before a decision on the application is made.
           type: string
+        meta_data:
+          description: Customer-defined additional information about the application.
+          type: object
         monthly_mortgage_or_rent:
           description: |-
             Monthly amount of the mortgage or rent that the user currently pays.
@@ -31705,6 +31744,15 @@ components:
           maximum: 99999.99
           minimum: 0
           type: number
+        offer_id:
+          description: Unique identifier of the offer for a pre-screened applicant.
+          type: string
+        prequalified_offer_pre_terms_tracking_token:
+          description: |-
+            The tracking token of the Pre-qualified Offer Pre-Terms.
+
+            This is the `tracking_token` returned in the `PREQUALIFICATION_PRE_TERMS` object when sending a `GET` request to the `/credit/applications/files` endpoint before a decision on the application is made.
+          type: string
         primary_income_source:
           description: |-
             Whether the primary income source comes from the user being employed, unemployed, self-employment, or another situation.
@@ -31756,6 +31804,8 @@ components:
           maximum: 9.999999999E7
           minimum: 0
           type: number
+        type:
+          $ref: '#/components/schemas/ApplicationType'
         user_token:
           description: Unique identifier of the applicant, the user applying for a
             credit account.
@@ -31769,7 +31819,6 @@ components:
         - primary_income_source
         - privacy_policy_tracking_token
         - residence_type
-        - rewards_disclosure_pre_terms_tracking_token
         - soct_tracking_token
         - total_annual_income
         - user_token
@@ -32344,6 +32393,8 @@ components:
       description: |-
         Contains information on user's device fingerprint.
         Usually obtained through a component embedded in the application.
+
+        Required if application `type` is `PREQUALIFICATION`.
       properties:
         data:
           description: The data generated by the embedded component.
@@ -33767,23 +33818,6 @@ components:
         - status
         - token
         - type
-      type: object
-    LinkedAccountBalanceResponse:
-      properties:
-        account_balance:
-          type: number
-        available_balance:
-          type: number
-        balance_iso_currency_code:
-          type: string
-        created_time:
-          format: date-time
-          type: string
-        last_modified_time:
-          format: date-time
-          type: string
-        processor_token:
-          type: string
       type: object
     MCCGroupListResponse:
       properties:
@@ -38576,10 +38610,16 @@ components:
             If there is only one funding source, the system ignores this field and always uses that source.
           type: boolean
         partner:
+          description: |-
+            The name of the partner who validated the account holder.
+            Returned when a third-party partner was used for account validation.
           enum:
             - PLAID
           type: string
         partner_account_link_reference_token:
+          description: |-
+            Supplied by the account validation partner, this value is a reference to the account holder's details, such as the account number and routing number.
+            Returned when a third-party partner was used for account validation.
           type: string
         token:
           description: |-
@@ -38589,7 +38629,11 @@ components:
             This value cannot be updated.
           type: string
         user_token:
-          description: Required if 'business_token' is null
+          description: |-
+            Supplied by the account validation partner, this value is a reference to the account holder's details, such as the account number and routing number.
+            This token is required if a `business_token` is not specified.
+
+            Send a `GET` request to `/users` to retrieve user tokens.
           maxLength: 36
           minLength: 1
           type: string
@@ -41009,6 +41053,8 @@ components:
           type: string
         country:
           type: string
+        customer_service_phone:
+          type: string
         ecommerce_security_level_indicator:
           type: string
         mcc:
@@ -41022,7 +41068,11 @@ components:
         partial_approval_capable:
           default: false
           type: boolean
+        phone:
+          type: string
         state:
+          type: string
+        url:
           type: string
         zip:
           maxLength: 10
@@ -41036,7 +41086,7 @@ components:
           description: Specifies whether the address is active.
           type: boolean
         address_1:
-          description: Street address.
+          description: Street name and number of the address.
           maxLength: 255
           minLength: 0
           type: string
@@ -41063,7 +41113,7 @@ components:
           minLength: 1
           type: string
         first_name:
-          description: First name of the account holder.
+          description: First name or given name of the account holder.
           maxLength: 40
           minLength: 0
           type: string
@@ -41074,7 +41124,7 @@ components:
             If this is the account holder's only address, it is used as the default regardless of this field's setting.
           type: boolean
         last_name:
-          description: Last name of the account holder.
+          description: Last name or family name of the account holder.
           maxLength: 40
           minLength: 0
           type: string
@@ -41134,7 +41184,7 @@ components:
           description: Specifies whether the address is active.
           type: boolean
         address_1:
-          description: Street address.
+          description: Street name and number of the address.
           maxLength: 255
           minLength: 0
           type: string
@@ -41154,7 +41204,7 @@ components:
           minLength: 0
           type: string
         first_name:
-          description: First name of the account holder.
+          description: First name or given name of the account holder.
           maxLength: 40
           minLength: 0
           type: string
@@ -41165,7 +41215,7 @@ components:
             If this is the account holder's only address, it is used as the default regardless of this field's setting.
           type: boolean
         last_name:
-          description: Last name of the account holder.
+          description: Last name or family name of the account holder.
           maxLength: 40
           minLength: 0
           type: string
@@ -42508,15 +42558,14 @@ components:
             * `not_verified`
             * `not_verified_authentication_outage`
             * `verified`
+            * `verified_amount_checked`
             * `verified_amount_greater_than_20_percent`: For Mastercard AAV verification, indicates that the original authentication amount and final authorization amount are mismatched, and that the final authorization amount exceeds the original authentication amount by more than 20%.
             This 20% margin falls outside Mastercard's suggested tolerance for what a European cardholder might reasonably expect when the total transaction amount is not known in advance.
             * `verified_amount_less_than_20_percent`: For Mastercard AAV verification, indicates that the original authentication amount and final authorization amount are mismatched, and that the final authorization amount exceeds the original authentication amount by 20% or less.
             This 20% margin falls within Mastercard's suggested tolerance for what a European cardholder might reasonably expect when the total transaction amount is not known in advance.
           type: string
         verification_value_created_by:
-          description: |-
-            Transaction participant who determined the verification result.
-            This field is only available for Visa transactions.
+          description: Transaction participant who determined the verification result.
           type: string
       type: object
     cardholder_balance:
@@ -44065,16 +44114,17 @@ components:
         - transaction_token
       type: object
     fee_model:
-      description: Contains attributes that define characteristics of one or more
-        fees.
+      description: |-
+        Contains attributes that define characteristics of one or more fees.
+        This array is returned in the response when it is included in the request.
       properties:
         memo:
-          description: Additional text that describes the fee transfer.
+          description: Additional text that describes the fee.
           maxLength: 99
           minLength: 1
           type: string
         tags:
-          description: Descriptive metadata about the fee transfer.
+          description: Descriptive metadata about the fee.
           maxLength: 255
           minLength: 0
           type: string
@@ -44392,14 +44442,12 @@ components:
         date_sent_for_verification:
           description: |-
             Date and time when the account was sent for verification, in UTC.
-
             This field is returned if it exists in the resource.
           format: date-time
           type: string
         date_verified:
           description: |-
             Date and time when the account was verified, in UTC.
-
             This field is returned if it exists in the resource.
           format: date-time
           type: string
@@ -44812,7 +44860,7 @@ components:
           minLength: 1
           type: string
         tags:
-          description: Comma-delimited list of tags describing the order.
+          description: Comma-delimited list of tags describing the GPA order.
           maxLength: 255
           minLength: 1
           type: string
@@ -44912,7 +44960,7 @@ components:
           type: string
         tags:
           description: |-
-            Comma-delimited list of tags describing the order.
+            Comma-delimited list of tags describing the GPA order.
 
             This field is returned if it exists in the resource.
           type: string
@@ -44977,7 +45025,7 @@ components:
           description: Current status of the GPA unload order.
           type: string
         tags:
-          description: Comma-delimited list of tags describing the order.
+          description: Comma-delimited list of tags describing the GPA order.
           type: string
         token:
           description: Unique identifier of the GPA unload order.
@@ -45104,9 +45152,7 @@ components:
           type: array
       type: object
     jit_address_verification:
-      description: Contains address verification data consisting of address data entered
-        by the cardholder, address data held by the Marqeta platform, and an assertion
-        by the Marqeta platform as to whether the two sets of data match.
+      description: Contains address verification data used to make JIT funding decisions.
       properties:
         gateway:
           $ref: '#/components/schemas/address_verification_source'
@@ -45243,7 +45289,8 @@ components:
         token:
           description: |-
             Existing JIT Funding token matching the `funding.gateway_log.transaction_id` field of the associated GPA order.
-            Note that the `transaction_id` field updates if a subsequent JIT Funding message associated with that GPA order is sent.
+
+            *NOTE:* The `transaction_id` field updates if a subsequent JIT Funding message associated with that GPA order is sent.
             If multiple JIT Funding messages are associated with the same GPA order, the `transaction_id` field matches the token of the most recent message.
           maxLength: 36
           minLength: 0
@@ -46073,6 +46120,10 @@ components:
       properties:
         account_identification_1:
           type: string
+        incoming_response_code:
+          description: Visa Risk Management esponse code `59`, indicating suspected
+            fraud.
+          type: string
         product_id:
           description: |-
             Product identification value assigned by the card network to each card product.
@@ -46752,12 +46803,12 @@ components:
           type: string
         partial_approval_capable:
           default: false
-          description: Whether the card acceptor or terminal is capable of partial
-            approvals.
+          description: Indicates whether the card acceptor or terminal supports partial-approval
+            transactions.
           type: boolean
         pin_entry_mode:
           description: |-
-            Whether the card acceptor or terminal can capture card personal identification numbers (PINs).
+            Indicates whether the card acceptor or terminal can capture card personal identification numbers (PINs).
 
             *NOTE:* This field does not indicate whether a PIN was entered.
           enum:
@@ -46768,12 +46819,24 @@ components:
           type: string
         pin_present:
           default: false
-          description: Indicates whether a PIN was presented during the transaction.
+          description: Indicates whether the cardholder entered a PIN during the transaction.
           type: boolean
         purchase_amount_only:
           default: false
-          description: Whether the card acceptor/terminal supports purchase-only approvals.
+          description: Indicates whether the card acceptor or terminal supports purchase-only
+            approvals.
           type: boolean
+        special_condition_indicator:
+          description: |-
+            Indicates a higher-risk operation, such as a quasi-cash or cryptocurrency transaction.
+
+            These transactions typically involve non-financial institutions.
+          enum:
+            - UNSPECIFIED
+            - CRYPTOCURRENCY_PURCHASE
+            - QUASI_CASH
+            - DEBT_PAYMENT
+          type: string
         terminal_attendance:
           description: Whether the card acceptor/terminal was attended.
           enum:
@@ -47048,8 +47111,9 @@ components:
           description: Three-digit ISO 4217 currency code.
           type: string
         fees:
-          description: Contains attributes that define characteristics of one or more
-            fees.
+          description: |-
+            Contains attributes that define characteristics of one or more fees.
+            This array is returned in the response when it is included in the request.
           items:
             $ref: '#/components/schemas/fee_model'
           type: array
@@ -47131,8 +47195,7 @@ components:
           minLength: 1
           type: string
         tags:
-          description: Custom-defined tags you create that are related to the program
-            transfer.
+          description: Comma-delimited list of tags describing the program transfer.
           maxLength: 255
           minLength: 1
           type: string
@@ -47229,6 +47292,10 @@ components:
       type: object
     provisioning_controls:
       properties:
+        dwt_use_card_status_during_auth:
+          type: boolean
+        dwt_verify_atc_during_auth:
+          type: boolean
         force_yellow_path_for_card_product:
           description: A value of `true` requires identity verification set-up for
             all digital wallets at the card product level.
@@ -47603,24 +47670,73 @@ components:
         - user_token
       type: object
     response:
-      description: Contains the Marqeta platform's assertion as to whether its address
-        verification data matches that provided by the cardholder.
+      description: Response codes and memos for address verification, card security
+        verification, and transactions.
       properties:
         additional_information:
-          description: Information about the relevant velocity control for the transaction,
-            if applicable.
+          description: |-
+            Information about the velocity control applied to the transaction.
+
+            *NOTE:* This field is returned only in transaction response objects.
+            It is not returned in address verification or card security verification response objects.
           type: string
         code:
           description: |-
-            Four-digit code corresponding with the outcome of the attempted transaction type.
+            Four-digit response code for address verification, card security code verification, or transactions.
 
-            `card_security_code_verification.response.code` indicates whether the verification check passed and can have these possible values:
+            For address verification responses, the code is an assertion by the Marqeta platform as to whether its address verification data matches that provided by the cardholder:
+
+            [cols="2,3,3"]
+            !===
+            ! Code ! Address ! Postal Code
+
+            ! 0000
+            ! Match
+            ! Match
+
+            ! 0001
+            ! Match
+            ! Unmatched
+
+            ! 0100
+            ! Unmatched
+            ! Match
+
+            ! 0101
+            ! Unmatched
+            ! Unmatched
+
+            ! 0200
+            ! Data Not Present
+            ! Match
+
+            ! 0201
+            ! Data Not Present
+            ! Unmatched
+
+            ! 0002
+            ! Match
+            ! Data Not Present
+
+            ! 0102
+            ! Unmatched
+            ! Data Not Present
+
+            ! 0303
+            ! Not Validated
+            ! Not Validated
+            !===
+
+            For card security verification, the code indicates whether the verification check passed and can have these possible values:
 
             * 0000 – passed
             * 0001 – did not pass
+
+            For a transaction, the code describes the outcome of the attempted transaction.
+            For the full list of transaction codes, see <</developer-guides/about-transactions#_transaction_response_codes, Transaction response codes>>.
           type: string
         memo:
-          description: Information on the outcome of the attempted transaction type.
+          description: Additional text that describes the response.
           type: string
       required:
         - code
@@ -48112,20 +48228,38 @@ components:
           type: string
       type: object
     terminal_model:
+      description: |-
+        Contains information about the point of sale, including details on how the card was presented.
+
+        Returned if provided by the card network, and the request uses Transaction Model v1 of the Marqeta Core API.
+        Not returned for Transaction Model v2 requests.
       properties:
         card_presence:
+          description: Indicates whether the card was present during the transaction.
           type: string
         cardholder_presence:
-          type: string
-        channel:
+          description: Indicates whether the cardholder was present during the transaction.
           type: string
         partial_approval_capable:
+          description: Indicates whether the card acceptor or terminal supports partial-approval
+            transactions.
           type: string
         pin_present:
+          description: Indicates whether the cardholder entered a PIN during the transaction.
           type: string
-        processing_type:
+        special_condition_indicator:
+          description: |-
+            Indicates a higher-risk operation, such as a quasi-cash or cryptocurrency transaction.
+
+            These transactions typically involve non-financial institutions.
+          enum:
+            - UNSPECIFIED
+            - CRYPTOCURRENCY_PURCHASE
+            - QUASI_CASH
+            - DEBT_PAYMENT
           type: string
         tid:
+          description: Card acceptor or terminal identification number.
           type: string
       type: object
     text:
@@ -48155,6 +48289,8 @@ components:
           description: |-
             Unique identifier of the business account holder.
             This token is required if the `user_token` is not included.
+
+            Send a `GET` request to `/businesses` to retrieve business tokens.
           maxLength: 36
           minLength: 1
           type: string
@@ -48188,10 +48324,13 @@ components:
           description: |-
             Unique identifier of the user account holder.
             This token is required if the `business_token` is not included.
+
+            Send a `GET` request to `/users` to retrieve user tokens.
           maxLength: 36
           minLength: 1
           type: string
         zip:
+          description: United States ZIP code of the account holder (user or business).
           type: string
       required:
         - account_number
@@ -48311,6 +48450,8 @@ components:
 
             This field is included when the cardholder conducts a transaction with a government-controlled merchant using a Marqeta-issued card.
           type: string
+        customer_service_phone:
+          type: string
         independent_sales_organization_id:
           type: string
         mcc:
@@ -48341,6 +48482,8 @@ components:
             The name of the payment facilitator, including the sub-merchant identifier, of an original credit transaction.
             This field is returned when a payment facilitator participates in the transaction.
           type: string
+        phone:
+          type: string
         poi:
           $ref: '#/components/schemas/terminal_model'
         postal_code:
@@ -48360,6 +48503,8 @@ components:
           description: |-
             The name of the transfer service provider of a money transfer original credit transaction.
             This field is included when a transfer service provider participates in the transaction.
+          type: string
+        url:
           type: string
       type: object
     transaction_controls:
@@ -48453,8 +48598,23 @@ components:
         notification_language:
           description: |-
             Specifies the language for 3D Secure and digital wallet token notifications sent to cardholders under this card program.
+
+            You can send notifications to your cardholders in the following languages:
+
+            * *ces* – Czech
+            * *deu* – German
+            * *eng* – English
+            * *fra* – French
+            * *grc* – Greek
+            * *ita* – Italian
+            * *nld* – Dutch
+            * *pol* – Polish
+            * *prt* – Portuguese
+            * *rou* – Romanian
+            * *spa* – Spanish
+            * *swe* – Swedish
+
             By default, notifications are sent in English.
-            You can also send notifications to your cardholders in Czech, French, Italian, German, Polish, Spanish, and Swedish.
 
             To specify the language for OTP notifications at the user level, see <</core-api/users, Users>>.
             Languages set at the user level take precedence over the language set at the card product level.
@@ -49541,17 +49701,18 @@ components:
             * *LIFETIME* – forever; time period never expires.
             * *TRANSACTION* – a single transaction.
 
+            // (2023-05-03): This statement was validated by Processing, as part of a customer inquiry.
             *NOTE:* If set to `DAY`, `WEEK`, or `MONTH`, the velocity control takes effect retroactively from the beginning of the specified period.
             The amount and usage data already collected within the first period is counted toward the limits.
 
-            *NOTE:* Editing any of the following fields on a velocity control resets its usage and amount count to 0:
+            // (2023-05-03): Commenting this note out, as it is untrue in testing as reported by customers and confirmed by transaction engine team
+            //*NOTE:* Editing any of the following fields on a velocity control resets its usage and amount count to 0:
 
-            * `merchant_scope.mcc`
-            * `merchant_scope.mid`
-            * `merchant_scope.mcc_group`
-            * `association.user_token`
-            * `association.card_product_token`
-            * `velocity_window`
+            //* `merchant_scope.mcc`
+            //* `merchant_scope.mid`
+            //* `merchant_scope.mcc_group`
+            //* `association.user_token`
+            //* `association.card_product_token`
           enum:
             - DAY
             - WEEK
@@ -49724,17 +49885,18 @@ components:
             * *LIFETIME* – forever; time period never expires.
             * *TRANSACTION* – a single transaction.
 
-            *NOTE:* If set to `DAY`, `WEEK`, `MONTH`, `QUARTER`, or `YEAR`, the velocity control takes effect retroactively from the beginning of the specified period.
+            // (2023-05-03): This statement was validated by Processing, as part of a customer inquiry.
+            *NOTE:* If set to `DAY`, `WEEK`, or `MONTH`, the velocity control takes effect retroactively from the beginning of the specified period.
             The amount and usage data already collected within the first period is counted toward the limits.
 
-            *NOTE:* Editing any of the following fields on a velocity control resets its usage and amount count to 0:
+            // (2023-05-03): Commenting this note out, as it is untrue in testing as reported by customers and confirmed by transaction engine team
+            //*NOTE:* Editing any of the following fields on a velocity control resets its usage and amount count to 0:
 
-            * `merchant_scope.mcc`
-            * `merchant_scope.mid`
-            * `merchant_scope.mcc_group`
-            * `association.user_token`
-            * `association.card_product_token`
-            * `velocity_window`
+            //* `merchant_scope.mcc`
+            //* `merchant_scope.mid`
+            //* `merchant_scope.mcc_group`
+            //* `association.user_token`
+            //* `association.card_product_token`
           enum:
             - DAY
             - WEEK
