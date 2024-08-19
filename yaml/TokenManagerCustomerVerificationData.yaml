@@ -1,0 +1,152 @@
+openapi: 3.0.0
+info:
+  title: External Customer UserData API
+  version: 1.0.0
+  description: >
+    The External Customer UserData API provides mechanisms for retrieving customer data related to cardholder verification methods and delivering one-time passcodes (OTPs).
+    This API enables secure retrieval of cardholder verification methods and allows for the delivery of OTPs for user verification. 
+    The API ensures data privacy by returning masked or partially hidden information and supports authentication via Basic Authentication.
+
+paths:
+  /cardholderverificationmethods:
+    post:
+      summary: Retrieve cardholder verification methods
+      description: >
+        This endpoint retrieves the verification methods associated with a specific cardholder. Verification methods include email addresses and phone numbers used for customer authentication.
+        The response includes masked or partially hidden values to protect sensitive information. To access this endpoint, both the user's unique token and the card's unique token are required.
+        The `userToken` identifies the customer, while the `cardToken` specifies the card for which the verification methods are being requested. 
+        This endpoint is useful for understanding the available verification methods for a customer and for preparing to send OTPs if necessary.
+      parameters:
+        - name: userToken
+          in: query
+          required: true
+          schema:
+            type: string
+          description: >
+            The unique token associated with the user whose verification methods are being retrieved. This token should be provided as part of the query string to specify the user.
+        - name: cardToken
+          in: query
+          required: true
+          schema:
+            type: string
+          description: >
+            The unique token associated with the card for which verification methods are being retrieved. This token should be provided as part of the query string to specify the card.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userToken:
+                  type: string
+                  description: >
+                    The unique token of the user for whom the verification methods are requested. This must be included in the request body for identification.
+                cardToken:
+                  type: string
+                  description: >
+                    The unique token of the card for which the verification methods are requested. This must be included in the request body to specify the card.
+      responses:
+        '200':
+          description: Successful response containing the cardholder's verification methods.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  verificationMethods:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        verificationMethod:
+                          type: string
+                          example: "EMAIL"
+                          description: >
+                            The method used for verification. Possible values include "EMAIL" for email addresses and "PHONE_NUMBER" for phone numbers. 
+                            This field indicates how the cardholder's identity can be verified.
+                        verificationValue:
+                          type: string
+                          example: "******@****.com"
+                          description: >
+                            The masked or partially hidden value associated with the verification method. This value is partially obscured to protect sensitive information.
+                            The maximum length for this value is 50 characters.
+                          maxLength: 50
+                    example:
+                      - verificationMethod: "EMAIL"
+                        verificationValue: "******@****.com"
+                      - verificationMethod: "PHONE_NUMBER"
+                        verificationValue: "******1234"
+        '400':
+          description: Bad request due to invalid or missing parameters. The request is rejected if the required query parameters are not provided or are incorrectly formatted.
+        '401':
+          description: Unauthorized access due to invalid API key or authentication failure. This indicates that the credentials provided do not grant access to the requested resource.
+        '500':
+          description: Internal server error indicating a problem with the server or processing request. This error suggests that an unexpected issue occurred on the server side.
+
+  /sendpasscode:
+    post:
+      summary: Deliver OTP to customer
+      description: >
+        This endpoint sends a one-time passcode (OTP) to the customer using the specified verification method. The OTP is used to verify the customer's identity securely.
+        To use this endpoint, the request must include the user's unique token, the card's unique token, and the verification method (e.g., "EMAIL" or "PHONE_NUMBER").
+        The OTP is generated and sent to the contact point associated with the specified verification method. This endpoint is crucial for facilitating secure customer authentication processes.
+      parameters:
+        - name: userToken
+          in: query
+          required: true
+          schema:
+            type: string
+          description: >
+            The unique token associated with the user to whom the OTP will be sent. This token is used to identify the customer and ensure the OTP is delivered to the correct recipient.
+        - name: cardToken
+          in: query
+          required: true
+          schema:
+            type: string
+          description: >
+            The unique token associated with the card for which the OTP is being sent. This token helps in linking the OTP request to the correct card.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userToken:
+                  type: string
+                  description: >
+                    The unique token of the user to whom the OTP will be sent. This should be included in the request body for identification purposes.
+                cardToken:
+                  type: string
+                  description: >
+                    The unique token of the card associated with the OTP request. This should be included in the request body to specify the card.
+                verificationMethod:
+                  type: string
+                  example: "EMAIL"
+                  description: >
+                    The method used to deliver the OTP. Possible values include "EMAIL" for email addresses and "PHONE_NUMBER" for phone numbers.
+                oneTimePasscode:
+                  type: string
+                  example: "123456"
+                  description: >
+                    The one-time passcode that will be sent to the customer. This code is used for secure verification and must be kept confidential.
+      responses:
+        '200':
+          description: OTP successfully sent to the customer. The response indicates that the OTP has been generated and delivered to the specified contact point.
+        '400':
+          description: Bad request due to invalid or missing parameters. The request is rejected if required parameters are missing or incorrectly formatted.
+        '401':
+          description: Unauthorized access due to invalid API key or authentication failure. This suggests that the credentials provided do not grant access to the requested operation.
+        '500':
+          description: Internal server error indicating a problem with the server or processing request. This error suggests that an unexpected issue occurred on the server side.
+
+components:
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic
+      description: >
+        Basic Authentication is used to access the API. Clients must provide a username and password in the request header to authenticate.
+security:
+  - BasicAuth: []
