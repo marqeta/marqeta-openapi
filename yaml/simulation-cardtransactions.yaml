@@ -1,43 +1,17 @@
 openapi: 3.0.3
 info:
-  title: Marqeta Core API
-  description: Simplified management of your payment programs
+  title: Simulations 2.0 API
+  description: This OpenAPI specificaiton can be used in Postman and for Simulations client generation.
   contact:
     name: Marqeta
     email: support@marqeta.com
   version: 3.0.0
-  x-docs-collection: Core API
 servers:
   - url: /
 tags:
-  - name: Simulations 2.0
+  - name: Simulations Card Transactions
     description: |-
 
-      The Marqeta platform provides you with a production environment and a sandbox.
-      The main difference between the production and sandbox environments is that your production environment communicates with a payment card network.
-      This communication allows your program's cards to pay for goods and services by initiating live transactions over the card network.
-
-      There are two types of sandbox environments available:
-
-      * *Public sandbox:* A single-user environment where you can begin building your program and experiment with the Marqeta platform.
-      * *Private sandbox:* A multi-user environment where you can integrate your application with the Marqeta platform.
-
-      All funds and transactions are simulated in both types of sandbox environments.
-
-      Unlike the production environment, a sandbox does not communicate with a card network, so the cards you create within them cannot be used to conduct real-world transactions.
-      Therefore, you must rely on simulated transactions in order to test all objects you create within a sandbox.
-      The sandbox environments provide a set of endpoints that let you simulate various types of card network transactions, such as authorizations, reversals, and balance inquiries.
-      These endpoints are available only within the sandbox, so the details on this page do not apply to production.
-
-      To use the Simulations API:
-
-      * Create a card in your sandbox environment.
-      * Use the `/simulations/cardtransactions/*` endpoints to simulate transaction event types. Each endpoint is its own event type.
-      * Use the `/webhooks` endpoint to send optional customer notifications for system events.
-
-      All simulations endpoints share the same request/response model, as described below.
-  - name: Simulations 2.0 — Card Transactions
-    description: |-
       The Marqeta platform provides you with a production environment and a sandbox.
       The main difference between the production and sandbox environments is that your production environment communicates with a payment card network.
       This communication allows your program's cards to pay for goods and services by initiating live transactions over the card network.
@@ -68,11 +42,44 @@ tags:
       To access the YAML file, see <</core-api/postman-simulations, Postman Collection for Simulations 2.0>>.
 
       All card transaction simulations endpoints share the same request/response model, as described below.
+  - name: Simulations Direct Deposits
+    description: |-
+
+      The Marqeta platform provides you with a production environment and a sandbox.
+      The main difference between the production and sandbox environments is that your production environment communicates with a payment card network.
+      This communication allows your program's cards to pay for goods and services by initiating live transactions over the card network.
+
+      There are two types of sandbox environments available:
+
+      * *Public sandbox:* A single-user environment where you can begin building your program and experiment with the Marqeta platform.
+      * *Private sandbox:* A multi-user environment where you can integrate your application with the Marqeta platform.
+
+      All funds and transactions are simulated in both types of sandbox environments.
+
+      Unlike the production environment, a sandbox does not communicate with a card network, so the cards you create within them cannot be used to conduct real-world transactions.
+      Therefore, you must rely on simulated transactions in order to test all objects you create within a sandbox.
+      The sandbox environments provide a set of endpoints that let you simulate various types of card network transactions, such as authorizations, reversals, and balance inquiries.
+      These endpoints are available only within the sandbox, so the details on this page do not apply to production.
+
+      To use the Simulations API for direct deposits:
+
+      * Create a card in your sandbox environment.
+      * Use the `/simulations/directdeposits/*` endpoints to simulate transaction event types. Each endpoint is its own event type.
+      * Use the `/webhooks` endpoint to send optional customer notifications for system events.
+
+      To use the Simulations API for card transactions, see <</core-api/simulations-card-transactions, Simulations 2.0 — Card Transactions>>.
+
+      [NOTE]
+      You can use link:https://www.postman.com[Postman, window="_blank"] to run requests for <</core-api/simulations-card-transactions, card transaction>> and <</core-api/simulations-direct-deposits, direct deposit>> simulations endpoints.
+      This collection of requests has been saved as a YAML file for your convenience.
+      To access the YAML file, see <</core-api/postman-simulations, Postman Collection for Simulations 2.0 >>.
+
+      All direct deposit simulations endpoints share the same request/response model, as described below.
 paths:
-  /cardtransactions/authorization:
+  /simulations/cardtransactions/authorization:
     post:
       tags:
-        - Simulations 2.0 — Card Transactions
+        - Simulations Card Transactions
       summary: Simulate authorization
       description: |-
         Authorization is the process of confirming whether a card is valid, business rules are met, and funds are sufficient, and then placing a temporary hold on those funds.
@@ -127,7 +134,7 @@ paths:
                     mid: '000000000011111'
                     mcc: '6411'
                     name: Marqeta Storefront
-                    city: St. Petersbu
+                    city: St. Petersbug
                     state: CA
         '404':
           description: Bad Request
@@ -135,10 +142,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /cardtransactions/authorization.advice:
+  /simulations/cardtransactions/authorization.advice:
     post:
       tags:
-        - Simulations 2.0 — Card Transactions
+        - Simulations Card Transactions
       summary: Simulate authorization advice
       description: |-
         Authorization advice allows an amount to be decreased after the authorization.
@@ -198,7 +205,7 @@ paths:
                     mid: '000000000011111'
                     mcc: '6411'
                     name: Marqeta Storefront
-                    city: St. Petersbu
+                    city: St. Petersbug
                     state: CA
                     postal_code: '33705'
         '404':
@@ -207,10 +214,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /cardtransactions/authorization.clearing:
+  /simulations/cardtransactions/authorization.clearing:
     post:
       tags:
-        - Simulations 2.0 — Card Transactions
+        - Simulations Card Transactions
       summary: Simulate authorization clearing
       description: |-
         Clearing is the process of finalizing the hold on funds and posting the transaction on the cardholder's account.
@@ -273,10 +280,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /cardtransactions/authorization.reversal:
+  /simulations/cardtransactions/authorization.reversal:
     post:
       tags:
-        - Simulations 2.0 — Card Transactions
+        - Simulations Card Transactions
       summary: Simulate authorization reversal
       description: |-
         A reversal releases the hold that was placed on account funds by an authorization, thus returning the funds to the account.
@@ -335,7 +342,7 @@ paths:
                       mid: '000000000011111'
                       mcc: '6411'
                       name: Marqeta Storefront
-                      city: St. Petersbu
+                      city: St. Petersbug
                       state: CA
                       postal_code: '33705'
         '404':
@@ -344,10 +351,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /cardtransactions/authorization.incremental:
+  /simulations/cardtransactions/authorization.incremental:
     post:
       tags:
-        - Simulations 2.0 — Card Transactions
+        - Simulations Card Transactions
       summary: Simulate incremental authorization
       description: |-
         Use this endpoint to simulate incremental authorization transactions.
@@ -357,12 +364,12 @@ paths:
 
         For this use case, you use two endpoints: one to create the authorization, and another to increment it.
 
-        * Create the authorization using the `/cardtransactions/authorization` endpoint:  +
+        * Create the authorization using the `/simulations/cardtransactions/authorization` endpoint:  +
         *Action:* `POST`  +
-        *Endpoint:* `/cardtransactions/authorization`
-        * Increment the authorization using the `/cardtransactions/authorization.incremental` endpoint:  +
+        *Endpoint:* `/simulations/cardtransactions/authorization`
+        * Increment the authorization using the `/simulations/cardtransactions/authorization.incremental` endpoint:  +
         *Action:* `POST`  +
-        *Endpoint:* `/cardtransactions/authorization.incremental`
+        *Endpoint:* `/simulations/cardtransactions/authorization.incremental`
 
         See the full request body structure at <</core-api/simulations-card-transactions#SimulationRequestBody, Request body>>.
       operationId: AuthorizationIncrementalEvent
@@ -413,7 +420,7 @@ paths:
                     mid: '000000000011111'
                     mcc: '6411'
                     name: Marqeta Storefront
-                    city: St. Petersbu
+                    city: St. Petersbug
                     state: CA
                     postal_code: '33705'
         '404':
@@ -422,10 +429,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /cardtransactions/authorization.cashback:
+  /simulations/cardtransactions/authorization.cashback:
     post:
       tags:
-        - Simulations 2.0 — Card Transactions
+        - Simulations Card Transactions
       summary: Simulate authorization cash back
       description: |-
         Use this endpoint to simulate `authorization.cashback` transactions, which covers authorization for cash back requested at a point-of-sale terminal.
@@ -488,7 +495,7 @@ paths:
                     mid: '000000000011111'
                     mcc: '6411'
                     name: Marqeta Storefront
-                    city: St. Petersbu
+                    city: St. Petersbug
                     state: CA
                     postal_code: '33705'
         '404':
@@ -497,10 +504,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /cardtransactions/authorization.atm.withdrawal:
+  /simulations/cardtransactions/authorization.atm.withdrawal:
     post:
       tags:
-        - Simulations 2.0 — Card Transactions
+        - Simulations Card Transactions
       summary: Simulate ATM withdrawal authorization
       description: |-
         Use this endpoint to simulate `authorization.atm.withdrawal` transactions.
@@ -563,7 +570,7 @@ paths:
                     mid: '000000000011111'
                     mcc: '6411'
                     name: Marqeta Storefront
-                    city: St. Petersbu
+                    city: St. Petersbug
                     state: CA
                     postal_code: '33705'
         '404':
@@ -572,10 +579,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /cardtransactions/authorization.clearing.atm.withdrawal:
+  /simulations/cardtransactions/authorization.clearing.atm.withdrawal:
     post:
       tags:
-        - Simulations 2.0 — Card Transactions
+        - Simulations Card Transactions
       summary: Simulate ATM withdrawal authorization clearing
       description: |-
         Use this endpoint to simulate `authorization.clearing.atm.withdrawal` transactions, which completes an authorization for withdrawing cash at an ATM.
@@ -631,7 +638,7 @@ paths:
                     mid: '000000000011111'
                     mcc: '6411'
                     name: Marqeta Storefront
-                    city: St. Petersbu
+                    city: St. Petersbug
                     state: CA
                     postal_code: '33705'
                     country_code: USA
@@ -641,10 +648,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /cardtransactions/authorization.quasi.cash:
+  /simulations/cardtransactions/authorization.quasi.cash:
     post:
       tags:
-        - Simulations 2.0 — Card Transactions
+        - Simulations Card Transactions
       summary: Simulate quasi-cash authorization
       description: |-
         Use this endpoint to simulate `authorization.quasi.cash` transactions.
@@ -706,7 +713,7 @@ paths:
                     mid: '000000000011111'
                     mcc: '6411'
                     name: Marqeta Storefront
-                    city: St. Petersbu
+                    city: St. Petersbug
                     state: CA
                     postal_code: '33705'
         '404':
@@ -715,10 +722,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /cardtransactions/authorization.clearing.quasi.cash:
+  /simulations/cardtransactions/authorization.clearing.quasi.cash:
     post:
       tags:
-        - Simulations 2.0 — Card Transactions
+        - Simulations Card Transactions
       summary: Simulate quasi-cash authorization clearing
       description: |-
         Use this endpoint to simulate `authorization.clearing.quasi.cash` transactions, which completes an authorization at a point-of-sale terminal for items equivalent to cash, such as traveler's checks, money orders, foreign currency, or gaming chips.
@@ -774,7 +781,7 @@ paths:
                     mid: '000000000011111'
                     mcc: '6411'
                     name: Marqeta Storefront
-                    city: St. Petersbu
+                    city: St. Petersbug
                     state: CA
                     postal_code: '33705'
                     country_code: USA
@@ -784,10 +791,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /cardtransactions/account.funding.authorization:
+  /simulations/cardtransactions/account.funding.authorization:
     post:
       tags:
-        - Simulations 2.0 — Card Transactions
+        - Simulations Card Transactions
       summary: Simulate AFT authorization
       description: |-
         Use this endpoint to simulate Account Funding Transactions (AFTs) using `account.funding.authorization`.
@@ -846,7 +853,7 @@ paths:
                     mid: '000984172732880'
                     mcc: 4829
                     name: Marqeta Storefront
-                    city: St. Petersbu
+                    city: St. Petersbug
                     state: CA
                     postal_code: 33705
                   account_funding:
@@ -862,10 +869,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /cardtransactions/account.funding.authorization.clearing:
+  /simulations/cardtransactions/account.funding.authorization.clearing:
     post:
       tags:
-        - Simulations 2.0 — Card Transactions
+        - Simulations Card Transactions
       summary: Simulate AFT authorization clearing
       description: |-
         Use this endpoint to simulate `account.funding.authorization.clearing` transactions.
@@ -917,7 +924,7 @@ paths:
                     mid: '000984172732880'
                     mcc: '4829'
                     name: Marqeta Storefront
-                    city: St. Petersbu
+                    city: St. Petersbug
                     state: CA
                     country_code: USA
         '404':
@@ -926,10 +933,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /cardtransactions/account.funding.authorization.reversal:
+  /simulations/cardtransactions/account.funding.authorization.reversal:
     post:
       tags:
-        - Simulations 2.0 — Card Transactions
+        - Simulations Card Transactions
       summary: Simulate AFT authorization reversal
       description: |-
         Use this endpoint to simulate `account.funding.authorization.reversal` transactions.
@@ -987,7 +994,7 @@ paths:
                     mid: '000984172732880'
                     mcc: '4829'
                     name: Marqeta Storefront
-                    city: St. Petersbu
+                    city: St. Petersbug
                     state: CA
                     postal_code: '33705'
         '404':
@@ -996,10 +1003,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /cardtransactions/account.funding.auth_plus_capture:
+  /simulations/cardtransactions/account.funding.auth_plus_capture:
     post:
       tags:
-        - Simulations 2.0 — Card Transactions
+        - Simulations Card Transactions
       summary: Simulate AFT authorization and capture
       description: |-
         Use this endpoint to simulate `account.funding.auth_plus_capture` transactions.
@@ -1063,7 +1070,7 @@ paths:
                     mid: '000984172732880'
                     mcc: '4829'
                     name: Marqeta Storefront
-                    city: St. Petersbu
+                    city: St. Petersbug
                     state: CA
                     postal_code: '33705'
                   account_funding:
@@ -1079,10 +1086,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /cardtransactions/account.funding.auth_plus_capture.reversal:
+  /simulations/cardtransactions/account.funding.auth_plus_capture.reversal:
     post:
       tags:
-        - Simulations 2.0 — Card Transactions
+        - Simulations Card Transactions
       summary: Simulate AFT authorization and capture reversal
       description: |-
         Use this endpoint to simulate `account.funding.auth_plus_capture.reversal` transactions.
@@ -1140,7 +1147,7 @@ paths:
                     mid: '000984172732880'
                     mcc: '4829'
                     name: Marqeta Storefront
-                    city: St. Petersbu
+                    city: St. Petersbug
                     state: CA
                     postal_code: '33705'
         '404':
@@ -1149,10 +1156,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /cardtransactions/refund:
+  /simulations/cardtransactions/refund:
     post:
       tags:
-        - Simulations 2.0 — Card Transactions
+        - Simulations Card Transactions
       summary: Simulate refund
       description: |-
         Use this endpoint to simulate an offline refund.
@@ -1219,10 +1226,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /cardtransactions/refund.authorization:
+  /simulations/cardtransactions/refund.authorization:
     post:
       tags:
-        - Simulations 2.0 — Card Transactions
+        - Simulations Card Transactions
       summary: Simulate refund authorization
       description: |-
         Online refund refers to the `refund.authorization` messages that Visa and Mastercard merchants can send to card issuers.
@@ -1285,7 +1292,7 @@ paths:
                     mid: '000000000011111'
                     mcc: '6411'
                     name: Marqeta Storefront
-                    city: St. Petersbu
+                    city: St. Petersbug
                     state: CA
                     postal_code: '33705'
         '404':
@@ -1294,10 +1301,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /cardtransactions/refund.authorization.reversal:
+  /simulations/cardtransactions/refund.authorization.reversal:
     post:
       tags:
-        - Simulations 2.0 — Card Transactions
+        - Simulations Card Transactions
       summary: Simulate refund authorization reversal
       description: |-
         Use this endpoint to reject `refund.authorization` transactions for online refunds.
@@ -1355,7 +1362,7 @@ paths:
                     mid: '000000000011111'
                     mcc: '6411'
                     name: Marqeta Storefront
-                    city: St. Petersbu
+                    city: St. Petersbug
                     state: CA
                     postal_code: '33705'
         '404':
@@ -1364,10 +1371,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /cardtransactions/refund.authorization.clearing:
+  /simulations/cardtransactions/refund.authorization.clearing:
     post:
       tags:
-        - Simulations 2.0 — Card Transactions
+        - Simulations Card Transactions
       summary: Simulate refund authorization clearing
       description: |-
         Use this endpoint to simulate online refund clearing.
@@ -1421,7 +1428,7 @@ paths:
                     mid: '000000000011111'
                     mcc: '6411'
                     name: Marqeta Storefront
-                    city: St. Petersbu
+                    city: St. Petersbug
                     state: CA
                     postal_code: '33705'
                     country_code: USA
@@ -1431,10 +1438,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /cardtransactions/pindebit:
+  /simulations/cardtransactions/pindebit:
     post:
       tags:
-        - Simulations 2.0 — Card Transactions
+        - Simulations Card Transactions
       summary: Simulate PIN-debit
       description: |-
         Use this endpoint to simulate transactions using network debit rails.
@@ -1496,7 +1503,7 @@ paths:
                     mid: '000000000011111'
                     mcc: '6411'
                     name: Marqeta Storefront
-                    city: St. Petersbu
+                    city: St. Petersbug
                     state: CA
                     postal_code: '33705'
         '404':
@@ -1505,10 +1512,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /cardtransactions/pindebit.authorization:
+  /simulations/cardtransactions/pindebit.authorization:
     post:
       tags:
-        - Simulations 2.0 — Card Transactions
+        - Simulations Card Transactions
       summary: Simulate PIN-debit authorization
       description: |-
         Use this endpoint to simulate PIN-debit authorization transactions.
@@ -1571,7 +1578,7 @@ paths:
                     mid: '000000000011111'
                     mcc: '5542'
                     name: Marqeta Storefront
-                    city: St. Petersbu
+                    city: St. Petersbug
                     state: CA
                     postal_code: '33705'
         '404':
@@ -1580,10 +1587,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /cardtransactions/pindebit.authorization.clearing:
+  /simulations/cardtransactions/pindebit.authorization.clearing:
     post:
       tags:
-        - Simulations 2.0 — Card Transactions
+        - Simulations Card Transactions
       summary: Simulate PIN-debit authorization clearing
       description: |-
         Use this endpoint to clear `pindebit.authorization` transactions.
@@ -1644,10 +1651,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /cardtransactions/pindebit.authorization.reversal:
+  /simulations/cardtransactions/pindebit.authorization.reversal:
     post:
       tags:
-        - Simulations 2.0 — Card Transactions
+        - Simulations Card Transactions
       summary: Simulate PIN-debit authorization reversal
       description: |-
         Use this endpoint to reverse `pindebit.authorization` transactions.
@@ -1705,7 +1712,7 @@ paths:
                     mid: '000000000011111'
                     mcc: '5542'
                     name: Marqeta Storefront
-                    city: St. Petersbu
+                    city: St. Petersbug
                     state: CA
                     postal_code: '33705'
         '404':
@@ -1714,10 +1721,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /cardtransactions/pindebit.cashback:
+  /simulations/cardtransactions/pindebit.cashback:
     post:
       tags:
-        - Simulations 2.0 — Card Transactions
+        - Simulations Card Transactions
       summary: Simulate PIN-debit cash back
       description: |-
         Simulate a PIN-debit transaction for cash back requested at a point-of-sale terminal.
@@ -1778,7 +1785,7 @@ paths:
                     mid: '000000000011111'
                     mcc: '6411'
                     name: Marqeta Storefront
-                    city: St. Petersbu
+                    city: St. Petersbug
                     state: CA
                     postal_code: '33705'
         '404':
@@ -1787,10 +1794,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /cardtransactions/pindebit.refund:
+  /simulations/cardtransactions/pindebit.refund:
     post:
       tags:
-        - Simulations 2.0 — Card Transactions
+        - Simulations Card Transactions
       summary: Simulate PIN-debit refund
       description: |-
         Use this endpoint to simulate a PIN-debit transaction refund.
@@ -1849,7 +1856,7 @@ paths:
                     mid: '000000000011111'
                     mcc: '6411'
                     name: Marqeta Storefront
-                    city: St. Petersbu
+                    city: St. Petersbug
                     state: CA
                     postal_code: '33705'
         '404':
@@ -1858,10 +1865,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /cardtransactions/pindebit.atm.withdrawal:
+  /simulations/cardtransactions/pindebit.atm.withdrawal:
     post:
       tags:
-        - Simulations 2.0 — Card Transactions
+        - Simulations Card Transactions
       summary: Simulate PIN-debit ATM withdrawal
       description: |-
         Use this endpoint to simulate a cash withdrawal at an ATM.
@@ -1921,7 +1928,7 @@ paths:
                     mid: '000000000011111'
                     mcc: '6411'
                     name: Marqeta Storefront
-                    city: St. Petersbu
+                    city: St. Petersbug
                     state: CA
                     postal_code: '33705'
         '404':
@@ -1930,10 +1937,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /cardtransactions/pindebit.balanceinquiry:
+  /simulations/cardtransactions/pindebit.balanceinquiry:
     post:
       tags:
-        - Simulations 2.0 — Card Transactions
+        - Simulations Card Transactions
       summary: Simulate PIN-debit balance inquiry
       description: |-
         Use this endpoint to simulate a balance inquiry via the card network.
@@ -1994,7 +2001,7 @@ paths:
                     mid: '000000000011111'
                     mcc: '6411'
                     name: Marqeta Storefront
-                    city: St. Petersbu
+                    city: St. Petersbug
                     state: CA
                     postal_code: '33705'
         '404':
@@ -2003,10 +2010,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /cardtransactions/pindebit.quasi.cash:
+  /simulations/cardtransactions/pindebit.quasi.cash:
     post:
       tags:
-        - Simulations 2.0 — Card Transactions
+        - Simulations Card Transactions
       summary: Simulate PIN-debit quasi-cash
       description: |-
         Use this endpoint to simulate `pindebit.quasi.cash` transactions.
@@ -2068,7 +2075,7 @@ paths:
                     mid: '000000000011111'
                     mcc: '6411'
                     name: Marqeta Storefront
-                    city: St. Petersbu
+                    city: St. Petersbug
                     state: CA
                     postal_code: '33705'
         '404':
@@ -2077,10 +2084,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /cardtransactions/original.credit.authorization:
+  /simulations/cardtransactions/original.credit.authorization:
     post:
       tags:
-        - Simulations 2.0 — Card Transactions
+        - Simulations Card Transactions
       summary: Simulate OCT authorization
       description: |-
         Use this endpoint to simulate `original.credit.authorization` transactions.
@@ -2141,7 +2148,7 @@ paths:
                     mid: '000000000001234'
                     mcc: '6411'
                     name: Marqeta Storefront
-                    city: St. Petersbu
+                    city: St. Petersbug
                     state: CA
                     postal_code: '33705'
         '404':
@@ -2150,10 +2157,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /cardtransactions/original.credit.authorization.clearing:
+  /simulations/cardtransactions/original.credit.authorization.clearing:
     post:
       tags:
-        - Simulations 2.0 — Card Transactions
+        - Simulations Card Transactions
       summary: Simulate OCT authorization clearing
       description: |-
         Use this endpoint to simulate `original.credit.authorization.clearing` transactions, which completes an original credit transaction (OCT) authorization.
@@ -2212,7 +2219,7 @@ paths:
                     mid: '000000000001234'
                     mcc: '6411'
                     name: Marqeta Storefront
-                    city: St. Petersbu
+                    city: St. Petersbug
                     state: CA
                     postal_code: '33705'
         '404':
@@ -2221,10 +2228,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /cardtransactions/original.credit.auth_plus_capture:
+  /simulations/cardtransactions/original.credit.auth_plus_capture:
     post:
       tags:
-        - Simulations 2.0 — Card Transactions
+        - Simulations Card Transactions
       summary: Simulate OCT authorization and capture
       description: |-
         Use this endpoint to simulate `original.credit.auth_plus_capture` transactions for single-message original credit transaction (OCT) for disbursing funds to a credit card.
@@ -2285,7 +2292,7 @@ paths:
                     mid: '000000000001111'
                     mcc: '6411'
                     name: Marqeta Storefront
-                    city: St. Petersbu
+                    city: St. Petersbug
                     state: CA
                     postal_code: '33705'
         '404':
@@ -2294,10 +2301,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /cardtransactions/original.credit.auth_plus_capture.reversal:
+  /simulations/cardtransactions/original.credit.auth_plus_capture.reversal:
     post:
       tags:
-        - Simulations 2.0 — Card Transactions
+        - Simulations Card Transactions
       summary: Simulate OCT authorization and capture reversal
       description: |-
         Use this endpoint to simulate `original.credit.auth_plus_capture.reversal` transactions to reverse the financial impact of a single-message original credit transaction (OCT).
@@ -2373,9 +2380,107 @@ paths:
                     mid: '000000000001111'
                     mcc: '6411'
                     name: Marqeta Storefront
-                    city: St. Petersbu
+                    city: St. Petersbug
                     state: CA
                     postal_code: '33705'
+        '404':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /simulations/directdeposits/credit:
+    post:
+      tags:
+        - Simulations Direct Deposits
+      summary: Simulate credit
+      description: |-
+        Use this endpoint to simulate crediting funds to a deposit account.
+
+        Simulate a direct deposit of funds to a user account by including the deposit account number of the account to be credited.
+        You can find the account number in the `account_number` field of the response when you create a new deposit account.
+        Alternatively, you can retrieve it by sending a `GET` request to the `/depositaccounts/user/{user_token}` endpoint.
+        For more information, see <</core-api/direct-deposits, Direct Deposit>>.
+
+        See the full request body structure at <</core-api/simulations-direct-deposits#SimulationRequestBody, Request body>>.
+      operationId: DirectDepositsCreditEvent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DirectDepositSimulationRequest'
+            example:
+              amount: 10
+              account_number: '**ACCOUNT_NUMBER**'
+              settlement_date: 2023-02-03T13:22:42Z
+              earlyPayEligible: false
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DirectDepositSimulationResponse'
+              example:
+                token: '**DIRECT_DEPOSIT_TOKEN**'
+                user_token: '**USER_TOKEN**'
+                type: CREDIT
+                state: PENDING
+                state_reason: testing
+                amount: 10
+                created_time: 2023-03-23T19:34:05Z
+                direct_deposit_account_token: '**DIRECT_DEPOSIT_ACCT_TOKEN**'
+                last_modified_time: 2023-03-23T19:34:05Z
+                settlement_date: 2023-02-03T13:22:42Z
+        '404':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /simulations/directdeposits/debit:
+    post:
+      tags:
+        - Simulations Direct Deposits
+      summary: Simulate debit
+      description: |-
+        Use this endpoint to simulate debiting funds from a deposit account.
+
+        Simulate a direct deposit of funds to a user account by including the deposit account number of the account to be debited.
+        You can find the account number in the `account_number` field of the response when you create a new deposit account.
+        Alternatively, you can retrieve it by sending a `GET` request to the `/depositaccounts/user/{user_token}` endpoint.
+        For more information, see <</core-api/direct-deposits, Direct Deposit>>.
+
+        See the full request body structure at <</core-api/simulations-direct-deposits#SimulationRequestBody, Request body>>.
+      operationId: DirectDepositsDebitEvent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DirectDepositSimulationRequest'
+            example:
+              amount: 10
+              account_number: '**ACCOUNT_NUMBER**'
+              settlement_date: 2023-02-03T13:22:42Z
+              earlyPayEligible: false
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DirectDepositSimulationResponse'
+              example:
+                token: '**DIRECT_DEPOSIT_TOKEN**'
+                user_token: '**USER_TOKEN**'
+                type: DEBIT
+                state: PENDING
+                state_reason: testing
+                amount: 10
+                created_time: 2023-03-23T19:34:05Z
+                direct_deposit_account_token: '**DIRECT_DEPOSIT_ACCT_TOKEN**'
+                last_modified_time: 2023-03-23T19:34:05Z
+                settlement_date: 2023-02-03T13:22:42Z
         '404':
           description: Bad Request
           content:
@@ -2714,6 +2819,12 @@ components:
     AuthorizationClearingEvent:
       required:
         - amount
+      properties:
+        amount:
+          $ref: '#/components/schemas/amount'
+        card_acceptor:
+          allOf:
+            - $ref: '#/components/schemas/transaction_card_acceptor'
       allOf:
         - $ref: '#/components/schemas/CardTransactionSimulation'
     AuthorizationReversalEvent:
@@ -2722,10 +2833,13 @@ components:
       properties:
         preceding_related_transaction_token:
           $ref: '#/components/schemas/token'
+        card_acceptor:
+          allOf:
+            - $ref: '#/components/schemas/transaction_card_acceptor'
+        account_name_verification:
+          $ref: '#/components/schemas/account_name_verification_model'
       allOf:
         - $ref: '#/components/schemas/CardTransactionSimulation'
-      account_name_verification:
-        $ref: '#/components/schemas/account_name_verification_model'
     AuthorizationAdviceEvent:
       required:
         - amount
@@ -2733,6 +2847,11 @@ components:
       properties:
         preceding_related_transaction_token:
           $ref: '#/components/schemas/token'
+        amount:
+          $ref: '#/components/schemas/amount'
+        card_acceptor:
+          allOf:
+            - $ref: '#/components/schemas/transaction_card_acceptor'
       allOf:
         - $ref: '#/components/schemas/CardTransactionSimulation'
     AuthorizationIncrementalEvent:
@@ -2742,6 +2861,11 @@ components:
       properties:
         preceding_related_transaction_token:
           $ref: '#/components/schemas/token'
+        amount:
+          $ref: '#/components/schemas/amount'
+        card_acceptor:
+          allOf:
+            - $ref: '#/components/schemas/transaction_card_acceptor'
       allOf:
         - $ref: '#/components/schemas/CardTransactionSimulation'
     AccountFundingAuthorizationEvent:
@@ -2751,11 +2875,22 @@ components:
       properties:
         card_token:
           $ref: '#/components/schemas/token'
+        amount:
+          $ref: '#/components/schemas/amount'
+        card_acceptor:
+          allOf:
+            - $ref: '#/components/schemas/transaction_card_acceptor'
       allOf:
         - $ref: '#/components/schemas/CardTransactionSimulation'
     AccountFundingAuthorizationClearingEvent:
       required:
         - amount
+      properties:
+        amount:
+          $ref: '#/components/schemas/amount'
+        card_acceptor:
+          allOf:
+            - $ref: '#/components/schemas/transaction_card_acceptor'
       allOf:
         - $ref: '#/components/schemas/CardTransactionSimulation'
     AccountFundingAuthorizationReversalEvent:
@@ -2765,6 +2900,11 @@ components:
       properties:
         preceding_related_transaction_token:
           $ref: '#/components/schemas/token'
+        amount:
+          $ref: '#/components/schemas/amount'
+        card_acceptor:
+          allOf:
+            - $ref: '#/components/schemas/transaction_card_acceptor'
       allOf:
         - $ref: '#/components/schemas/CardTransactionSimulation'
     AccountFundingAuthPlusCaptureEvent:
@@ -2774,6 +2914,11 @@ components:
       properties:
         card_token:
           $ref: '#/components/schemas/token'
+        amount:
+          $ref: '#/components/schemas/amount'
+        card_acceptor:
+          allOf:
+            - $ref: '#/components/schemas/transaction_card_acceptor'
       allOf:
         - $ref: '#/components/schemas/CardTransactionSimulation'
     AccountFundingAuthPlusCaptureReversalEvent:
@@ -2783,6 +2928,11 @@ components:
       properties:
         preceding_related_transaction_token:
           $ref: '#/components/schemas/token'
+        amount:
+          $ref: '#/components/schemas/amount'
+        card_acceptor:
+          allOf:
+            - $ref: '#/components/schemas/transaction_card_acceptor'
       allOf:
         - $ref: '#/components/schemas/CardTransactionSimulation'
     RefundEvent:
@@ -2792,6 +2942,11 @@ components:
       properties:
         card_token:
           $ref: '#/components/schemas/token'
+        amount:
+          $ref: '#/components/schemas/amount'
+        card_acceptor:
+          allOf:
+            - $ref: '#/components/schemas/transaction_card_acceptor'
       allOf:
         - $ref: '#/components/schemas/CardTransactionSimulation'
     RefundAuthorizationEvent:
@@ -2801,6 +2956,11 @@ components:
       properties:
         card_token:
           $ref: '#/components/schemas/token'
+        amount:
+          $ref: '#/components/schemas/amount'
+        card_acceptor:
+          allOf:
+            - $ref: '#/components/schemas/transaction_card_acceptor'
       allOf:
         - $ref: '#/components/schemas/CardTransactionSimulation'
     RefundAuthorizationReversalEvent:
@@ -2810,11 +2970,22 @@ components:
       properties:
         preceding_related_transaction_token:
           $ref: '#/components/schemas/token'
+        amount:
+          $ref: '#/components/schemas/amount'
+        card_acceptor:
+          allOf:
+            - $ref: '#/components/schemas/transaction_card_acceptor'
       allOf:
         - $ref: '#/components/schemas/CardTransactionSimulation'
     RefundAuthorizationClearingEvent:
       required:
         - amount
+      properties:
+        amount:
+          $ref: '#/components/schemas/amount'
+        card_acceptor:
+          allOf:
+            - $ref: '#/components/schemas/transaction_card_acceptor'
       allOf:
         - $ref: '#/components/schemas/CardTransactionSimulation'
     PindebitEvent:
@@ -2832,8 +3003,8 @@ components:
               description: The merchant identifier.
           allOf:
             - $ref: '#/components/schemas/transaction_card_acceptor'
-          account_name_verification:
-            $ref: '#/components/schemas/account_name_verification_model'
+        account_name_verification:
+          $ref: '#/components/schemas/account_name_verification_model'
       allOf:
         - $ref: '#/components/schemas/CardTransactionSimulation'
     PindebitCashbackEvent:
@@ -2844,6 +3015,8 @@ components:
       properties:
         card_token:
           $ref: '#/components/schemas/token'
+        amount:
+          $ref: '#/components/schemas/amount'
         card_acceptor:
           required:
             - mid
@@ -2862,6 +3035,8 @@ components:
       properties:
         card_token:
           $ref: '#/components/schemas/token'
+        amount:
+          $ref: '#/components/schemas/amount'
         card_acceptor:
           required:
             - mid
@@ -2880,6 +3055,8 @@ components:
       properties:
         card_token:
           $ref: '#/components/schemas/token'
+        amount:
+          $ref: '#/components/schemas/amount'
         card_acceptor:
           required:
             - mid
@@ -2894,6 +3071,12 @@ components:
     PindebitAuthorizationClearingEvent:
       required:
         - amount
+      properties:
+        amount:
+          $ref: '#/components/schemas/amount'
+        card_acceptor:
+          allOf:
+            - $ref: '#/components/schemas/transaction_card_acceptor'
       allOf:
         - $ref: '#/components/schemas/CardTransactionSimulation'
     PindebitAuthorizationReversalEvent:
@@ -2903,6 +3086,11 @@ components:
       properties:
         preceding_related_transaction_token:
           $ref: '#/components/schemas/token'
+        amount:
+          $ref: '#/components/schemas/amount'
+        card_acceptor:
+          allOf:
+            - $ref: '#/components/schemas/transaction_card_acceptor'
       allOf:
         - $ref: '#/components/schemas/CardTransactionSimulation'
     PindebitAtmWithdrawalEvent:
@@ -2912,6 +3100,8 @@ components:
       properties:
         card_token:
           $ref: '#/components/schemas/token'
+        amount:
+          $ref: '#/components/schemas/amount'
         card_acceptor:
           required:
             - mid
@@ -2933,11 +3123,22 @@ components:
       properties:
         card_token:
           $ref: '#/components/schemas/token'
+        amount:
+          $ref: '#/components/schemas/amount'
+        card_acceptor:
+          allOf:
+            - $ref: '#/components/schemas/transaction_card_acceptor'
       allOf:
         - $ref: '#/components/schemas/CardTransactionSimulation'
     OriginalCreditAuthorizationClearingEvent:
       required:
         - amount
+      properties:
+        amount:
+          $ref: '#/components/schemas/amount'
+        card_acceptor:
+          allOf:
+            - $ref: '#/components/schemas/transaction_card_acceptor'
       allOf:
         - $ref: '#/components/schemas/CardTransactionSimulation'
     OriginalCreditAuthPlusCaptureEvent:
@@ -2947,6 +3148,11 @@ components:
       properties:
         card_token:
           $ref: '#/components/schemas/token'
+        amount:
+          $ref: '#/components/schemas/amount'
+        card_acceptor:
+          allOf:
+            - $ref: '#/components/schemas/transaction_card_acceptor'
       allOf:
         - $ref: '#/components/schemas/CardTransactionSimulation'
     OriginalCreditAuthPlusCaptureReversalEvent:
@@ -2956,6 +3162,11 @@ components:
       properties:
         preceding_related_transaction_token:
           $ref: '#/components/schemas/token'
+        amount:
+          $ref: '#/components/schemas/amount'
+        card_acceptor:
+          allOf:
+            - $ref: '#/components/schemas/transaction_card_acceptor'
       allOf:
         - $ref: '#/components/schemas/CardTransactionSimulation'
     AuthorizationQuasiCashEvent:
@@ -2965,6 +3176,8 @@ components:
       properties:
         card_token:
           $ref: '#/components/schemas/token'
+        amount:
+          $ref: '#/components/schemas/amount'
         card_acceptor:
           required:
             - mid
@@ -2979,6 +3192,12 @@ components:
     AuthorizationClearingQuasiCashEvent:
       required:
         - amount
+      properties:
+        amount:
+          $ref: '#/components/schemas/amount'
+        card_acceptor:
+          allOf:
+            - $ref: '#/components/schemas/transaction_card_acceptor'
       allOf:
         - $ref: '#/components/schemas/CardTransactionSimulation'
     AuthorizationAtmWithdrawalEvent:
@@ -2988,6 +3207,8 @@ components:
       properties:
         card_token:
           $ref: '#/components/schemas/token'
+        amount:
+          $ref: '#/components/schemas/amount'
         card_acceptor:
           required:
             - mid
@@ -3003,8 +3224,11 @@ components:
       required:
         - amount
       properties:
-        preceding_related_transaction_token:
-          $ref: '#/components/schemas/token'
+        amount:
+          $ref: '#/components/schemas/amount'
+        card_acceptor:
+          allOf:
+            - $ref: '#/components/schemas/transaction_card_acceptor'
       allOf:
         - $ref: '#/components/schemas/CardTransactionSimulation'
     PindebitQuasiCashEvent:
@@ -3014,6 +3238,8 @@ components:
       properties:
         card_token:
           $ref: '#/components/schemas/token'
+        amount:
+          $ref: '#/components/schemas/amount'
         card_acceptor:
           required:
             - mid
@@ -3033,6 +3259,8 @@ components:
       properties:
         card_token:
           $ref: '#/components/schemas/token'
+        amount:
+          $ref: '#/components/schemas/amount'
         card_acceptor:
           required:
             - mid
@@ -3600,7 +3828,6 @@ components:
       properties:
         amount:
           minimum: 0
-          maximum: 1000000000
           exclusiveMinimum: false
           type: number
           description: Requested amount of funding.
@@ -4193,15 +4420,6 @@ components:
             - gpa.debit.pending.reversal
             - gpa.debit.reversal
             - gpa.grant
-            - msa.credit
-            - msa.credit.chargeback
-            - msa.credit.chargeback.reversal
-            - msa.credit.pending
-            - msa.credit.pending.reversal
-            - msa.credit.reversal
-            - msa.debit
-            - msa.debit.pending
-            - msa.debit.pending.reversal
             - original.credit.auth_plus_capture
             - original.credit.auth_plus_capture.reversal
             - original.credit.authorization
@@ -4431,6 +4649,186 @@ components:
           $ref: '#/components/schemas/account_name_verification_model'
       description: Contains information about the transaction.
       x-allowableValues: Existing `transaction` object
+    amount:
+      minimum: 0
+      maximum: 1000000000
+      type: number
+      description: Amount of the transaction.
+    DirectDepositSimulationRequest:
+      required:
+        - account_number
+        - amount
+        - settlement_date
+      type: object
+      properties:
+        account_number:
+          type: string
+          description: The account number of the user to debit or credit.
+          x-allowableValues: An account number belonging to an active user with an
+            active card.
+        amount:
+          type: number
+          description: Amount of the transaction.
+          x-allowableValues: |-
+            Format: 0.00
+
+            Must be greater than zero
+        company_discretionary_data:
+          maxLength: 20
+          minLength: 0
+          type: string
+          description: Company-specific data provided by the direct deposit originator.
+        company_entry_description:
+          maxLength: 10
+          minLength: 0
+          type: string
+          description: Company-specific data provided by the direct deposit originator.
+        company_identification:
+          maxLength: 10
+          minLength: 0
+          type: string
+          description: Alphanumeric code that identifies the direct deposit originator.
+        company_name:
+          maxLength: 16
+          minLength: 0
+          type: string
+          description: Name of the direct deposit originator.
+        earlyPayEligible:
+          type: boolean
+          description: Indicates whether the transaction is eligible for early pay.
+          default: false
+          x-allowableValues: '`true`, `false`'
+        individual_identification_number:
+          maxLength: 22
+          minLength: 0
+          type: string
+          description: Accounting number by which the recipient is known to the direct
+            deposit originator.
+        individual_name:
+          maxLength: 35
+          minLength: 0
+          type: string
+          description: Identity of the direct deposit recipient.
+        settlement_date:
+          type: string
+          description: Date when the credit or debit is applied.
+          format: date-time
+          x-allowableValues: 'Format: yyyy-mm-ddThh:mm:ssZ'
+        standard_entry_class_code:
+          maxLength: 3
+          minLength: 0
+          type: string
+          description: Three-letter code identifying the type of entry.
+        type:
+          type: string
+          description: Whether funds are being debited from or credited to the account.
+          readOnly: true
+          enum:
+            - CREDIT
+            - DEBIT
+    DirectDepositSimulationResponse:
+      type: object
+      properties:
+        type:
+          type: string
+          description: Whether funds are being debited from or credited to the account.
+          enum:
+            - CREDIT
+            - DEBIT
+        state:
+          type: string
+          description: Current status of the direct deposit record.
+          enum:
+            - PENDING
+            - APPLIED
+            - REVERSED
+            - REJECTED
+        state_reason:
+          type: string
+          description: Explanation of why the direct deposit record is in the current
+            state.
+          x-allowableValues: 255 char max
+        state_reason_code:
+          type: string
+          description: A standard code describing the reason for the current state.
+          x-allowableValues: Three-character code
+        token:
+          type: string
+          description: Unique identifier of the direct deposit record.
+          x-allowableValues: Existing direct deposit record token.
+        user_token:
+          type: string
+          description: Unique identifier of the user associated with the direct deposit
+            record.
+          x-allowableValues: Existing user token
+        amount:
+          type: number
+          description: Amount being debited or credited.
+          x-allowableValues: Existing amount in 0.00 decimal format.
+        business_token:
+          type: string
+          description: Unique identifier of the business associated with the direct
+            deposit record.
+          x-allowableValues: Existing business token
+        company_discretionary_data:
+          type: string
+          description: Company-specific data provided by the direct deposit originator.
+          x-allowableValues: 20 char max
+        company_entry_description:
+          type: string
+          description: Description of the purpose of the direct deposit.
+          x-allowableValues: 10 char max
+        company_identification:
+          type: string
+          description: Alphanumeric code that identifies the direct deposit originator.
+          x-allowableValues: 10 char max
+        company_name:
+          type: string
+          description: Name of the direct deposit originator.
+          x-allowableValues: 16 char max
+        created_time:
+          type: string
+          description: Date and time when the deposit account was created.
+          format: date-time
+          x-allowableValues: 'Format: yyyy-MM-dd''T''HH:mm:ssZ'
+        direct_deposit_account_token:
+          type: string
+          description: Unique identifier of the affected deposit account.
+          x-allowableValues: 36 char max
+        individual_identification_number:
+          type: string
+          description: Accounting number by which the recipient is known to the direct
+            deposit originator.
+          x-allowableValues: 255 char max
+        individual_name:
+          type: string
+          description: Name of the direct deposit recipient.
+          x-allowableValues: 22 char max
+        last_modified_time:
+          type: string
+          description: Date and time when the direct deposit account was last modified.
+          format: date-time
+          x-allowableValues: |-
+            date-time
+
+            *Format:*   +
+            yyyy-MM-ddThh:mm:ssZ
+        settlement_date:
+          type: string
+          description: Date and time when the credit or debit is applied.
+          format: date-time
+          x-allowableValues: |-
+            date-time
+
+            *Format:*   +
+            yyyy-MM-ddThh:mm:ssZ
+        standard_entry_class_code:
+          type: string
+          description: Three-letter code identifying the type of entry.
+          x-allowableValues: '`ACK`, `ADV`, `ARC`, `ATX`, `BOC`, `CCD`, `CIE`, `COR`,
+            `CTX`, `DNE`, `ENR`, `IAT`, `MTE`, `POP`, `POS`, `PPD`, `RCK`, `SHR`,
+            `TEL`, `TRC`, `TRX`, `WEB`, `XCK`'
+
 
     account_name_verification_model:
       properties:
@@ -4456,3 +4854,4 @@ components:
         middle_name:
           type: string
       type: object
+      
