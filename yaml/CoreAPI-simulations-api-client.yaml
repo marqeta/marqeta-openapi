@@ -1,0 +1,4872 @@
+openapi: 3.0.3
+info:
+  title: Simulations 2.0 API
+  description: This OpenAPI specificaiton can be used in Postman and for Simulations client generation.
+  contact:
+    name: Marqeta
+    email: support@marqeta.com
+  version: 3.0.0
+servers:
+  - url: /
+tags:
+  - name: Simulations Card Transactions
+    description: |-
+
+      The Marqeta platform provides you with a production environment and a sandbox.
+      The main difference between the production and sandbox environments is that your production environment communicates with a payment card network.
+      This communication allows your program's cards to pay for goods and services by initiating live transactions over the card network.
+
+      There are two types of sandbox environments available:
+
+      * *Public sandbox:* A single-user environment where you can begin building your program and experiment with the Marqeta platform.
+      * *Private sandbox:* A multi-user environment where you can integrate your application with the Marqeta platform.
+
+      All funds and transactions are simulated in both types of sandbox environments.
+
+      Unlike the production environment, a sandbox does not communicate with a card network, so the cards you create within them cannot be used to conduct real-world transactions.
+      Therefore, you must rely on simulated transactions in order to test all objects you create within a sandbox.
+      The sandbox environments provide a set of endpoints that let you simulate various types of card network transactions, such as authorizations, reversals, and balance inquiries.
+      These endpoints are available only within the sandbox, so the details on this page do not apply to production.
+
+      To use the Simulations API for card transactions:
+
+      * Create a card in your sandbox environment.
+      * Use the `/simulations/cardtransactions/*` endpoints to simulate transaction event types. Each endpoint is its own event type.
+      * Use the `/webhooks` endpoint to send optional customer notifications for system events.
+
+      To use the Simulations API for direct deposits, see <</core-api/simulations-direct-deposits, Simulations 2.0 — Direct Deposits>>.
+
+      [NOTE]
+      You can use link:https://www.postman.com[Postman, window="_blank"] to run requests for <</core-api/simulations-card-transactions, card transaction>> and <</core-api/simulations-direct-deposits, direct deposit>> simulations endpoints.
+      This collection of requests has been saved as a YAML file for your convenience.
+      To access the YAML file, see <</core-api/postman-simulations, Postman Collection for Simulations 2.0>>.
+
+      All card transaction simulations endpoints share the same request/response model, as described below.
+  - name: Simulations Direct Deposits
+    description: |-
+
+      The Marqeta platform provides you with a production environment and a sandbox.
+      The main difference between the production and sandbox environments is that your production environment communicates with a payment card network.
+      This communication allows your program's cards to pay for goods and services by initiating live transactions over the card network.
+
+      There are two types of sandbox environments available:
+
+      * *Public sandbox:* A single-user environment where you can begin building your program and experiment with the Marqeta platform.
+      * *Private sandbox:* A multi-user environment where you can integrate your application with the Marqeta platform.
+
+      All funds and transactions are simulated in both types of sandbox environments.
+
+      Unlike the production environment, a sandbox does not communicate with a card network, so the cards you create within them cannot be used to conduct real-world transactions.
+      Therefore, you must rely on simulated transactions in order to test all objects you create within a sandbox.
+      The sandbox environments provide a set of endpoints that let you simulate various types of card network transactions, such as authorizations, reversals, and balance inquiries.
+      These endpoints are available only within the sandbox, so the details on this page do not apply to production.
+
+      To use the Simulations API for direct deposits:
+
+      * Create a card in your sandbox environment.
+      * Use the `/simulations/directdeposits/*` endpoints to simulate transaction event types. Each endpoint is its own event type.
+      * Use the `/webhooks` endpoint to send optional customer notifications for system events.
+
+      To use the Simulations API for card transactions, see <</core-api/simulations-card-transactions, Simulations 2.0 — Card Transactions>>.
+
+      [NOTE]
+      You can use link:https://www.postman.com[Postman, window="_blank"] to run requests for <</core-api/simulations-card-transactions, card transaction>> and <</core-api/simulations-direct-deposits, direct deposit>> simulations endpoints.
+      This collection of requests has been saved as a YAML file for your convenience.
+      To access the YAML file, see <</core-api/postman-simulations, Postman Collection for Simulations 2.0 >>.
+
+      All direct deposit simulations endpoints share the same request/response model, as described below.
+paths:
+  /simulations/cardtransactions/authorization:
+    post:
+      tags:
+        - Simulations Card Transactions
+      summary: Simulate authorization
+      description: |-
+        Authorization is the process of confirming whether a card is valid, business rules are met, and funds are sufficient, and then placing a temporary hold on those funds.
+        Use this endpoint to simulate an `authorization` type transaction by including the `card_token` and other authorization details in your request.
+
+        See the full request body structure at <</core-api/simulations-card-transactions#SimulationRequestBody, Request body>>.
+      operationId: AuthorizationEvent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthorizationEvent'
+            example:
+              card_token: '**CARD_TOKEN**'
+              amount: 10
+              card_acceptor:
+                mid: '11111'
+              network: VISA
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardTransactionResponse'
+              example:
+                transaction:
+                  type: authorization
+                  state: PENDING
+                  token: '**AUTHORIZATION_TRANSACTION_TOKEN**'
+                  user_token: '**USER_TOKEN**'
+                  card_token: '**CARD_TOKEN**'
+                  response:
+                    code: 0
+                    memo: Approved or completed successfully
+                  created_time: 2022-12-06T21:39:43Z
+                  user_transaction_time: 2022-12-06T21:39:43Z
+                  settlement_date: 2022-12-06T00:00:00Z
+                  amount: 10
+                  gpa:
+                    ledger_balance: 250
+                    available_balance: 240
+                    impacted_amount: -10
+                  currency_code: USD
+                  currency_conversion:
+                    original_amount: 10
+                    conversion_rate: 1.0
+                    original_currency_code: 840
+                  network: VISA
+                  subnetwork: VISANET
+                  card_acceptor:
+                    mid: '000000000011111'
+                    mcc: '6411'
+                    name: Marqeta Storefront
+                    city: St. Petersbug
+                    state: CA
+        '404':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /simulations/cardtransactions/authorization.advice:
+    post:
+      tags:
+        - Simulations Card Transactions
+      summary: Simulate authorization advice
+      description: |-
+        Authorization advice allows an amount to be decreased after the authorization.
+        This endpoint allows you to simulate post-swipe adjustments.
+        Simulate an `authorization.advice` transaction by including the `preceding_related_transaction_token` and other authorization details in your request.
+
+        See the full request body structure at <</core-api/simulations-card-transactions#SimulationRequestBody, Request body>>.
+      operationId: AuthorizationAdviceEvent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthorizationAdviceEvent'
+            example:
+              amount: 10
+              preceding_related_transaction_token: '**AUTHORIZATION_TRANSACTION_TOKEN**'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardTransactionResponse'
+              example:
+                transaction:
+                  type: authorization.advice
+                  state: PENDING
+                  token: '**AUTHORIZATION_ADVICE_TRANSACTION_TOKEN**'
+                  user_token: '**USER_TOKEN**'
+                  card_token: '**CARD_TOKEN**'
+                  response:
+                    code: '0000'
+                    memo: Approved or completed successfully
+                  created_time: 2023-03-07T18:25:28Z
+                  user_transaction_time: 2023-03-07T18:25:22Z
+                  settlement_date: 2023-03-07T00:00:00Z
+                  amount: 10
+                  request_amount: 10
+                  gpa:
+                    ledger_balance: 250
+                    available_balance: 240
+                    impacted_amount: -10
+                  currency_code: USD
+                  currency_conversion:
+                    original_amount: 10
+                    conversion_rate: 1
+                    original_currency_code: '840'
+                  preceding_related_transaction_token: '**AUTHORIZATION_TRANSACTION_TOKEN**'
+                  network: VISA
+                  subnetwork: VISANET
+                  acquirer_fee_amount: 0
+                  fraud:
+                    network:
+                      transaction_risk_score: 46
+                      account_risk_score: '9 '
+                  card_acceptor:
+                    mid: '000000000011111'
+                    mcc: '6411'
+                    name: Marqeta Storefront
+                    city: St. Petersbug
+                    state: CA
+                    postal_code: '33705'
+        '404':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /simulations/cardtransactions/authorization.clearing:
+    post:
+      tags:
+        - Simulations Card Transactions
+      summary: Simulate authorization clearing
+      description: |-
+        Clearing is the process of finalizing the hold on funds and posting the transaction on the cardholder's account.
+        This process is triggered by the merchant's capture request.
+        This endpoint simulates an `authorization.clearing` type transaction by including the `preceding_related_transaction_token` and `amount` in your request.
+
+        See the full request body structure at <</core-api/simulations-card-transactions#SimulationRequestBody, Request body>>.
+      operationId: AuthorizationClearingEvent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthorizationClearingEvent'
+            example:
+              preceding_related_transaction_token: '**AUTHORIZATION_TRANSACTION_TOKEN**'
+              amount: 10
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardTransactionResponse'
+              example:
+                transaction:
+                  type: authorization.clearing
+                  state: COMPLETION
+                  token: '**AUTHORIZATION_CLEARING_TRANSACTION_TOKEN**'
+                  user_token: '**USER_TOKEN**'
+                  card_token: '**CARD_TOKEN**'
+                  response:
+                    code: 0
+                    memo: Approved or completed successfully
+                  created_time: 2022-12-06T21:41:48Z
+                  user_transaction_time: 2022-12-06T21:39:43Z
+                  settlement_date: 2022-12-06T00:00:00Z
+                  amount: 10
+                  gpa:
+                    ledger_balance: 240
+                    available_balance: 240
+                    impacted_amount: -10
+                  currency_code: USD
+                  currency_conversion:
+                    original_amount: 10
+                    conversion_rate: 1.0
+                    original_currency_code: 826
+                  preceding_related_transaction_token: '**AUTHORIZATION_TRANSACTION_TOKEN**'
+                  network: VISA
+                  subnetwork: VISANET
+                  card_acceptor:
+                    mid: '000000000011111'
+                    mcc: '6411'
+                    name: Card Acceptor Name
+                    city: Seattle
+                    state: WA
+                    country_code: USA
+        '404':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /simulations/cardtransactions/authorization.reversal:
+    post:
+      tags:
+        - Simulations Card Transactions
+      summary: Simulate authorization reversal
+      description: |-
+        A reversal releases the hold that was placed on account funds by an authorization, thus returning the funds to the account.
+        This endpoint simulates an `authorization.reversal` type transaction by including the `original_transaction_token` and `amount` in your request.
+
+        See the full request body structure at <</core-api/simulations-card-transactions#SimulationRequestBody, Request body>>.
+      operationId: AuthorizationReversalEvent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthorizationReversalEvent'
+            example:
+              preceding_related_transaction_token: '**AUTHORIZATION_TRANSACTION_TOKEN**'
+              amount: 10
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardTransactionResponse'
+              example:
+                transaction:
+                  type: authorization.reversal
+                  state: CLEARED
+                  token: '**AUTHORIZATION_REVERSAL_TRANSACTION_TOKEN**'
+                  user_token: '**USER_TOKEN**'
+                  card_token: '**CARD_TOKEN**'
+                  response:
+                    code: '0000'
+                    memo: Approved or completed successfully
+                    created_time: 2023-03-23T19:46:23Z
+                    user_transaction_time: 2023-03-23T19:46:20Z
+                    settlement_date: 2023-03-23T00:00:00Z
+                    amount: 10
+                    request_amount: 10
+                    gpa:
+                      ledger_balance: 250
+                      available_balance: 250
+                      impacted_amount: 10
+                    currency_code: USD
+                    currency_conversion:
+                      original_amount: 10
+                      conversion_rate: 1
+                      original_currency_code: '840'
+                    network: VISA
+                    subnetwork: VISANET
+                    acquirer_fee_amount: 0
+                    fraud:
+                      network:
+                        transaction_risk_score: 16
+                        account_risk_score: '4 '
+                    preceding_related_transaction_token: '**AUTHORIZATION_TRANSACTION_TOKEN**'
+                    card_acceptor:
+                      mid: '000000000011111'
+                      mcc: '6411'
+                      name: Marqeta Storefront
+                      city: St. Petersbug
+                      state: CA
+                      postal_code: '33705'
+        '404':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /simulations/cardtransactions/authorization.incremental:
+    post:
+      tags:
+        - Simulations Card Transactions
+      summary: Simulate incremental authorization
+      description: |-
+        Use this endpoint to simulate incremental authorization transactions.
+        An incremental authorization is a request to add an additional dollar amount to an ongoing prior authorization.
+        This type of transaction enables you to increase the final amount authorized as conditions change or additional charges accrue.
+        A common use case is adding the gratuity (an incremental authorization) to the original total (a prior authorization) of a restaurant bill.
+
+        For this use case, you use two endpoints: one to create the authorization, and another to increment it.
+
+        * Create the authorization using the `/simulations/cardtransactions/authorization` endpoint:  +
+        *Action:* `POST`  +
+        *Endpoint:* `/simulations/cardtransactions/authorization`
+        * Increment the authorization using the `/simulations/cardtransactions/authorization.incremental` endpoint:  +
+        *Action:* `POST`  +
+        *Endpoint:* `/simulations/cardtransactions/authorization.incremental`
+
+        See the full request body structure at <</core-api/simulations-card-transactions#SimulationRequestBody, Request body>>.
+      operationId: AuthorizationIncrementalEvent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthorizationIncrementalEvent'
+            example:
+              amount: 5
+              preceding_related_transaction_token: '**AUTHORIZATION_TRANSACTION_TOKEN**'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardTransactionResponse'
+              example:
+                transaction:
+                  type: authorization.incremental
+                  state: PENDING
+                  token: '**AUTHORIZATION_INCREMENTAL_TRANSACTION_TOKEN**'
+                  user_token: '**USER_TOKEN**'
+                  card_token: '**CARD_TOKEN**'
+                  response: null
+                  code: '0000'
+                  memo: Approved or completed successfully
+                  created_time: 2023-02-22T18:10:12Z
+                  user_transaction_time: 2023-02-22T18:10:12Z
+                  settlement_date: 2023-02-22T00:00:00Z
+                  amount: 5
+                  request_amount: 5
+                  gpa:
+                    ledger_balance: 250
+                    available_balance: 220
+                    impacted_amount: -5
+                  currency_code: USD
+                  currency_conversion:
+                    original_amount: 5
+                    conversion_rate: 1
+                    original_currency_code: '840'
+                  preceding_related_transaction_token: '**AUTHORIZATION_TRANSACTION_TOKEN**'
+                  network: VISA
+                  subnetwork: VISANET
+                  acquirer_fee_amount: 0
+                  card_acceptor:
+                    mid: '000000000011111'
+                    mcc: '6411'
+                    name: Marqeta Storefront
+                    city: St. Petersbug
+                    state: CA
+                    postal_code: '33705'
+        '404':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /simulations/cardtransactions/authorization.cashback:
+    post:
+      tags:
+        - Simulations Card Transactions
+      summary: Simulate authorization cash back
+      description: |-
+        Use this endpoint to simulate `authorization.cashback` transactions, which covers authorization for cash back requested at a point-of-sale terminal.
+        This simulation can be used to test dual-message cash back transactions.
+
+        See the full request body structure at <</core-api/simulations-card-transactions#SimulationRequestBody, Request body>>.
+      operationId: AuthorizationCashbackEvent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthorizationCashbackEvent'
+            example:
+              card_token: '**CARD_TOKEN**'
+              amount: 10
+              card_acceptor:
+                mid: '11111'
+              network: VISA
+              cash_back_amount: 10
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardTransactionResponse'
+              example:
+                transaction:
+                  type: authorization.cashback
+                  state: PENDING
+                  token: '**AUTHORIZATION_CASHBACK_TRANSACTION_TOKEN**'
+                  user_token: '**USER_TOKEN**'
+                  card_token: '**CARD_TOKEN**'
+                  response:
+                    code: '0000'
+                    memo: Approved or completed successfully
+                  created_time: 2023-03-23T19:43:43Z
+                  user_transaction_time: 2023-03-23T19:43:43Z
+                  settlement_date: 2023-03-23T00:00:00Z
+                  amount: 20
+                  cash_back_amount: 10
+                  request_amount: 20
+                  gpa:
+                    ledger_balance: 250
+                    available_balance: 230
+                    impacted_amount: -20
+                  currency_code: USD
+                  currency_conversion:
+                    original_amount: 20
+                    conversion_rate: 1
+                    original_currency_code: '840'
+                  network: VISA
+                  subnetwork: VISANET
+                  acquirer_fee_amount: 0
+                  fraud:
+                    network:
+                      transaction_risk_score: 85
+                      account_risk_score: '3'
+                  card_acceptor:
+                    mid: '000000000011111'
+                    mcc: '6411'
+                    name: Marqeta Storefront
+                    city: St. Petersbug
+                    state: CA
+                    postal_code: '33705'
+        '404':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /simulations/cardtransactions/authorization.atm.withdrawal:
+    post:
+      tags:
+        - Simulations Card Transactions
+      summary: Simulate ATM withdrawal authorization
+      description: |-
+        Use this endpoint to simulate `authorization.atm.withdrawal` transactions.
+        In the EU, this includes authorization for withdrawing cash at an ATM.
+        In the US, this event indicates that the cardholder got cash from a bank teller rather than an ATM.
+        This simulation can be used to test dual-message ATM withdrawal transactions.
+
+        See the full request body structure at <</core-api/simulations-card-transactions#SimulationRequestBody, Request body>>.
+      operationId: AuthorizationAtmWithdrawalEvent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthorizationAtmWithdrawalEvent'
+            example:
+              card_token: '**CARD_TOKEN**'
+              amount: 10
+              card_acceptor:
+                mid: '11111'
+              network: VISA
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardTransactionResponse'
+              example:
+                transaction:
+                  type: authorization.atm.withdrawal
+                  state: PENDING
+                  token: '**AUTHORIZATION_ATM_WITHDRAWAL_TRANSACTION_TOKEN**'
+                  user_token: '**USER_TOKEN**'
+                  card_token: '**CARD_TOKEN**'
+                  response:
+                    code: '0000'
+                    memo: Approved or completed successfully
+                  created_time: 2023-03-23T22:14:46Z
+                  user_transaction_time: 2023-03-23T22:14:46Z
+                  settlement_date: 2023-03-23T00:00:00Z
+                  amount: 10
+                  request_amount: 10
+                  gpa:
+                    ledger_balance: 250
+                    available_balance: 240
+                    impacted_amount: -10
+                  currency_code: USD
+                  currency_conversion:
+                    original_amount: 10
+                    conversion_rate: 1
+                    original_currency_code: '840'
+                  network: VISA
+                  subnetwork: VISANET
+                  acquirer_fee_amount: 0
+                  fraud:
+                    network:
+                      transaction_risk_score: 44
+                      account_risk_score: '4 '
+                  card_acceptor:
+                    mid: '000000000011111'
+                    mcc: '6411'
+                    name: Marqeta Storefront
+                    city: St. Petersbug
+                    state: CA
+                    postal_code: '33705'
+        '404':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /simulations/cardtransactions/authorization.clearing.atm.withdrawal:
+    post:
+      tags:
+        - Simulations Card Transactions
+      summary: Simulate ATM withdrawal authorization clearing
+      description: |-
+        Use this endpoint to simulate `authorization.clearing.atm.withdrawal` transactions, which completes an authorization for withdrawing cash at an ATM.
+        This simulation can be used to test dual-message ATM withdrawal transactions.
+
+        See the full request body structure at <</core-api/simulations-card-transactions#SimulationRequestBody, Request body>>.
+      operationId: AuthorizationClearingAtmWithdrawalEvent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthorizationClearingAtmWithdrawalEvent'
+            example:
+              amount: 10
+              preceding_related_transaction_token: '**AUTHORIZATION_TRANSACTION_TOKEN**'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardTransactionResponse'
+              example:
+                transaction:
+                  type: authorization.clearing.atm.withdrawal
+                  state: COMPLETION
+                  token: '**AUTHORIZATION_CLEARING_ATM_TRANSACTION_TOKEN**'
+                  user_token: '**USER_TOKEN**'
+                  card_token: '**CARD_TOKEN**'
+                  response:
+                    code: '0000'
+                    memo: Approved or completed successfully
+                  created_time: 2023-03-23T22:18:31Z
+                  user_transaction_time: 2023-03-23T22:18:31Z
+                  settlement_date: 2023-03-23T00:00:00Z
+                  amount: 10
+                  amount_to_be_released: 0
+                  request_amount: 10
+                  gpa:
+                    ledger_balance: 240
+                    available_balance: 240
+                    impacted_amount: -10
+                  currency_code: USD
+                  currency_conversion:
+                    original_amount: 10
+                    conversion_rate: 1
+                    original_currency_code: '840'
+                  preceding_related_transaction_token: '**AUTHORIZATION_TRANSACTION_TOKEN**'
+                  network: VISA
+                  subnetwork: VISANET
+                  acquirer_fee_amount: 0
+                  card_acceptor:
+                    mid: '000000000011111'
+                    mcc: '6411'
+                    name: Marqeta Storefront
+                    city: St. Petersbug
+                    state: CA
+                    postal_code: '33705'
+                    country_code: USA
+        '404':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /simulations/cardtransactions/authorization.quasi.cash:
+    post:
+      tags:
+        - Simulations Card Transactions
+      summary: Simulate quasi-cash authorization
+      description: |-
+        Use this endpoint to simulate `authorization.quasi.cash` transactions.
+        This is for authorization at a point-of-sale terminal for items equivalent to cash, such as traveler's checks, money orders, foreign currency, or gaming chips.
+        This simulation can be used to test dual-message quasi-cash transactions.
+
+        See the full request body structure at <</core-api/simulations-card-transactions#SimulationRequestBody, Request body>>.
+      operationId: AuthorizationQuasiCashEvent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthorizationQuasiCashEvent'
+            example:
+              card_token: '**CARD_TOKEN**'
+              amount: 10
+              card_acceptor:
+                mid: '11111'
+              network: VISA
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardTransactionResponse'
+              example:
+                transaction:
+                  type: authorization.quasi.cash
+                  state: PENDING
+                  token: '**AUTHORIZATION_QUASI_CASH_TRANSACTION_TOKEN**'
+                  user_token: '**USER_TOKEN**'
+                  card_token: '**CARD_TOKEN**'
+                  response:
+                    code: '0000'
+                    memo: Approved or completed successfully
+                  created_time: 2023-03-23T22:32:51Z
+                  user_transaction_time: 2023-03-23T22:32:51Z
+                  settlement_date: 2023-03-23T00:00:00Z
+                  amount: 10
+                  request_amount: 10
+                  gpa:
+                    ledger_balance: 240
+                    available_balance: 240
+                    impacted_amount: -10
+                  currency_code: USD
+                  currency_conversion:
+                    original_amount: 10
+                    conversion_rate: 1
+                    original_currency_code: '840'
+                  network: VISA
+                  subnetwork: VISANET
+                  acquirer_fee_amount: 0
+                  fraud:
+                    network:
+                      transaction_risk_score: 17
+                      account_risk_score: '6 '
+                  card_acceptor:
+                    mid: '000000000011111'
+                    mcc: '6411'
+                    name: Marqeta Storefront
+                    city: St. Petersbug
+                    state: CA
+                    postal_code: '33705'
+        '404':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /simulations/cardtransactions/authorization.clearing.quasi.cash:
+    post:
+      tags:
+        - Simulations Card Transactions
+      summary: Simulate quasi-cash authorization clearing
+      description: |-
+        Use this endpoint to simulate `authorization.clearing.quasi.cash` transactions, which completes an authorization at a point-of-sale terminal for items equivalent to cash, such as traveler's checks, money orders, foreign currency, or gaming chips.
+        This simulation can be used to test dual-message quasi-cash transactions.
+
+        See the full request body structure at <</core-api/simulations-card-transactions#SimulationRequestBody, Request body>>.
+      operationId: AuthorizationClearingQuasiCashEvent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthorizationClearingQuasiCashEvent'
+            example:
+              amount: 10
+              preceding_related_transaction_token: '**AUTHORIZATION_TRANSACTION_TOKEN**'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardTransactionResponse'
+              example:
+                transaction:
+                  type: authorization.clearing.quasi.cash
+                  state: COMPLETION
+                  token: '**AUTHORIZATION_CLEARING_QUASI_CASH_TOKEN**'
+                  user_token: '**USER_TOKEN**'
+                  card_token: '**CARD_TOKEN**'
+                  response:
+                    code: '0000'
+                    memo: Approved or completed successfully
+                  created_time: 2023-03-23T22:34:18Z
+                  user_transaction_time: 2023-03-23T22:34:18Z
+                  settlement_date: 2023-03-23T00:00:00Z
+                  amount: 10
+                  amount_to_be_released: 0
+                  request_amount: 10
+                  gpa:
+                    ledger_balance: 80
+                    available_balance: 80
+                    impacted_amount: -10
+                  currency_code: USD
+                  currency_conversion:
+                    original_amount: 10
+                    conversion_rate: 1
+                    original_currency_code: '840'
+                  preceding_related_transaction_token: '**AUTHORIZATION_TRANSACTION_TOKEN**'
+                  network: VISA
+                  subnetwork: VISANET
+                  acquirer_fee_amount: 0
+                  card_acceptor:
+                    mid: '000000000011111'
+                    mcc: '6411'
+                    name: Marqeta Storefront
+                    city: St. Petersbug
+                    state: CA
+                    postal_code: '33705'
+                    country_code: USA
+        '404':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /simulations/cardtransactions/account.funding.authorization:
+    post:
+      tags:
+        - Simulations Card Transactions
+      summary: Simulate AFT authorization
+      description: |-
+        Use this endpoint to simulate Account Funding Transactions (AFTs) using `account.funding.authorization`.
+
+        See the full request body structure at <</core-api/simulations-card-transactions#SimulationRequestBody, Request body>>.
+      operationId: AccountFundingAuthorizationEvent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountFundingAuthorizationEvent'
+            example:
+              card_token: '**CARD_TOKEN**'
+              amount: 10
+              network: VISA
+              account_funding:
+                transaction_type: ACCOUNT_TO_ACCOUNT
+                funding_source: CREDIT
+                receiver_account_type: CARD_ACCOUNT
+                first_name: FirstName
+                last_name: LastName
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardTransactionResponse'
+              example:
+                transaction:
+                  type: account.funding.authorization
+                  state: PENDING
+                  token: '**ACCOUNT_FUNDING_AUTHORIZATION_TRANSACTION_TOKEN**'
+                  user_token: '**USER_TOKEN**'
+                  card_token: '**CARD_TOKEN**'
+                  response:
+                    code: 0
+                    memo: Approved or completed successfully
+                  created_time: 2023-01-19T00:03:48Z
+                  user_transaction_time: 2023-01-19T00:03:48Z
+                  settlement_date: 2023-01-19T00:00:00Z
+                  amount: 10
+                  gpa:
+                    ledger_balance: 250
+                    available_balance: 240
+                    impacted_amount: -10
+                  currency_code: USD
+                  currency_conversion:
+                    original_amount: 10
+                    conversion_rate: 1.0
+                    original_currency_code: 840
+                  network: VISA
+                  subnetwork: VISANET
+                  acquirer_fee_amount: 0
+                  card_acceptor:
+                    mid: '000984172732880'
+                    mcc: 4829
+                    name: Marqeta Storefront
+                    city: St. Petersbug
+                    state: CA
+                    postal_code: 33705
+                  account_funding:
+                    receiver_name: FirstName LastName
+                    funding_source: CREDIT
+                    transaction_type: ACCOUNT_TO_ACCOUNT
+                  original_credit:
+                    funding_source: CREDIT
+                    transaction_type: ACCOUNT_TO_ACCOUNT
+        '404':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /simulations/cardtransactions/account.funding.authorization.clearing:
+    post:
+      tags:
+        - Simulations Card Transactions
+      summary: Simulate AFT authorization clearing
+      description: |-
+        Use this endpoint to simulate `account.funding.authorization.clearing` transactions.
+
+        See the full request body structure at <</core-api/simulations-card-transactions#SimulationRequestBody, Request body>>.
+      operationId: AccountFundingAuthorizationClearingEvent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountFundingAuthorizationClearingEvent'
+            example:
+              amount: 10
+              preceding_related_transaction_token: '**AUTHORIZATION_TRANSACTION_TOKEN**'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardTransactionResponse'
+              example:
+                transaction:
+                  type: account.funding.authorization.clearing
+                  state: COMPLETION
+                  token: '**ACCOUNT_FUNDING_AUTHORIZATION_CLEARING_TRANSACTION_TOKEN**'
+                  user_token: '**USER_TOKEN**'
+                  card_token: '**CARD_TOKEN**'
+                  response:
+                    code: 0
+                    memo: Approved or completed successfully
+                  created_time: 2022-12-06T21:47:21Z
+                  user_transaction_time: 2022-12-06T21:45:57Z
+                  settlement_date: 2022-12-06T00:00:00Z
+                  amount: 10
+                  gpa:
+                    ledger_balance: 240
+                    available_balance: 240
+                    impacted_amount: -10
+                  currency_code: USD
+                  currency_conversion:
+                    original_amount: 10
+                    conversion_rate: 1.0
+                    original_currency_code: 840
+                  preceding_related_transaction_token: '**AUTHORIZATION_TRANSACTION_TOKEN**'
+                  network: VISA
+                  subnetwork: VISANET
+                  card_acceptor:
+                    mid: '000984172732880'
+                    mcc: '4829'
+                    name: Marqeta Storefront
+                    city: St. Petersbug
+                    state: CA
+                    country_code: USA
+        '404':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /simulations/cardtransactions/account.funding.authorization.reversal:
+    post:
+      tags:
+        - Simulations Card Transactions
+      summary: Simulate AFT authorization reversal
+      description: |-
+        Use this endpoint to simulate `account.funding.authorization.reversal` transactions.
+
+        See the full request body structure at <</core-api/simulations-card-transactions#SimulationRequestBody, Request body>>.
+      operationId: AccountFundingAuthorizationReversalEvent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountFundingAuthorizationReversalEvent'
+            example:
+              amount: 10
+              preceding_related_transaction_token: '**AUTHORIZATION_TRANSACTION_TOKEN**'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardTransactionResponse'
+              example:
+                transaction:
+                  type: account.funding.authorization.reversal
+                  state: CLEARED
+                  token: '**ACCOUNT_FUNDING_AUTHORIZATION_REVERSAL_TRANSACTION_TOKEN**'
+                  user_token: '**USER_TOKEN**'
+                  card_token: '**CARD_TOKEN**'
+                  response:
+                    code: '0000'
+                    memo: Approved or completed successfully
+                  created_time: 2023-03-23T21:31:40Z
+                  user_transaction_time: 2023-03-23T21:31:37Z
+                  settlement_date: 2023-03-23T00:00:00Z
+                  amount: 10
+                  request_amount: 10
+                  gpa:
+                    ledger_balance: 250
+                    available_balance: 250
+                    impacted_amount: 10
+                  currency_code: USD
+                  currency_conversion:
+                    original_amount: 10
+                    conversion_rate: 1
+                    original_currency_code: '840'
+                  preceding_related_transaction_token: '**AUTHORIZATION_TRANSACTION_TOKEN**'
+                  network: VISA
+                  subnetwork: VISANET
+                  acquirer_fee_amount: 0
+                  fraud:
+                    network:
+                      transaction_risk_score: 44
+                      account_risk_score: '2 '
+                  card_acceptor:
+                    mid: '000984172732880'
+                    mcc: '4829'
+                    name: Marqeta Storefront
+                    city: St. Petersbug
+                    state: CA
+                    postal_code: '33705'
+        '404':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /simulations/cardtransactions/account.funding.auth_plus_capture:
+    post:
+      tags:
+        - Simulations Card Transactions
+      summary: Simulate AFT authorization and capture
+      description: |-
+        Use this endpoint to simulate `account.funding.auth_plus_capture` transactions.
+
+        See the full request body structure at <</core-api/simulations-card-transactions#SimulationRequestBody, Request body>>.
+      operationId: AccountFundingAuthPlusCaptureEvent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountFundingAuthPlusCaptureEvent'
+            example:
+              card_token: '**CARD_TOKEN**'
+              amount: 10
+              network: VISA
+              account_funding:
+                transaction_type: ACCOUNT_TO_ACCOUNT
+                funding_source: CREDIT
+                receiver_account_type: CARD_ACCOUNT
+                first_name: FirstName
+                last_name: LastName
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardTransactionResponse'
+              example:
+                transaction:
+                  type: account.funding.auth_plus_capture
+                  state: COMPLETION
+                  token: '**ACCOUNT_FUNDING_AUTH_PLUS_CAPTURE_TRANSACTION_TOKEN**'
+                  user_token: '**USER_TOKEN**'
+                  card_token: '**CARD_TOKEN**'
+                  response:
+                    code: '0000'
+                    memo: Approved or completed successfully
+                  created_time: 2023-04-05T20:23:33Z
+                  user_transaction_time: 2023-04-05T20:23:33Z
+                  settlement_date: 2023-04-05T00:00:00Z
+                  amount: 10
+                  request_amount: 10
+                  gpa:
+                    ledger_balance: 240
+                    available_balance: 240
+                    impacted_amount: -10
+                  currency_code: USD
+                  currency_conversion:
+                    original_amount: 10
+                    conversion_rate: 1
+                    original_currency_code: '840'
+                  network: VISA
+                  subnetwork: VISANETDEBIT
+                  acquirer_fee_amount: 0
+                  fraud:
+                    network:
+                      transaction_risk_score: 15
+                      account_risk_score: '3 '
+                  card_acceptor:
+                    mid: '000984172732880'
+                    mcc: '4829'
+                    name: Marqeta Storefront
+                    city: St. Petersbug
+                    state: CA
+                    postal_code: '33705'
+                  account_funding:
+                    receiver_name: fName lName
+                    funding_source: CREDIT
+                    transaction_type: ACCOUNT_TO_ACCOUNT
+                  original_credit:
+                    funding_source: CREDIT
+                    transaction_type: ACCOUNT_TO_ACCOUNT
+        '404':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /simulations/cardtransactions/account.funding.auth_plus_capture.reversal:
+    post:
+      tags:
+        - Simulations Card Transactions
+      summary: Simulate AFT authorization and capture reversal
+      description: |-
+        Use this endpoint to simulate `account.funding.auth_plus_capture.reversal` transactions.
+
+        See the full request body structure at <</core-api/simulations-card-transactions#SimulationRequestBody, Request body>>.
+      operationId: AccountFundingAuthPlusCaptureReversalEvent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountFundingAuthPlusCaptureReversalEvent'
+            example:
+              amount: 10
+              preceding_related_transaction_token: '**AUTHORIZATION_TRANSACTION_TOKEN**'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardTransactionResponse'
+              example:
+                transaction:
+                  type: account.funding.auth_plus_capture.reversal
+                  state: COMPLETION
+                  token: '**ACCOUNT_FUNDING_AUTH_PLUS_CAPTURE_REVERSAL_TRANSACTION_TOKEN**'
+                  user_token: '**USER_TOKEN**'
+                  card_token: '**CARD_TOKEN**'
+                  response:
+                    code: '0000'
+                    memo: Approved or completed successfully
+                  created_time: 2023-04-05T20:59:47Z
+                  user_transaction_time: 2023-04-05T20:59:38Z
+                  settlement_date: 2023-04-05T00:00:00Z
+                  amount: 10
+                  request_amount: 10
+                  gpa:
+                    ledger_balance: 250
+                    available_balance: 250
+                    impacted_amount: 10
+                  currency_code: USD
+                  currency_conversion:
+                    original_amount: 10
+                    conversion_rate: 1
+                    original_currency_code: '840'
+                  preceding_related_transaction_token: '**AUTHORIZATION_TRANSACTION_TOKEN**'
+                  network: VISA
+                  subnetwork: VISANET
+                  acquirer_fee_amount: 0
+                  fraud:
+                    network:
+                      transaction_risk_score: 28
+                      account_risk_score: '1 '
+                  card_acceptor:
+                    mid: '000984172732880'
+                    mcc: '4829'
+                    name: Marqeta Storefront
+                    city: St. Petersbug
+                    state: CA
+                    postal_code: '33705'
+        '404':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /simulations/cardtransactions/refund:
+    post:
+      tags:
+        - Simulations Card Transactions
+      summary: Simulate refund
+      description: |-
+        Use this endpoint to simulate an offline refund.
+        Refunds are not associated with a token, so a `preceding_related_transaction_token` is not needed.
+
+        See the full request body structure at <</core-api/simulations-card-transactions#SimulationRequestBody, Request body>>.
+      operationId: RefundEvent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefundEvent'
+            example:
+              card_token: '**CARD_TOKEN**'
+              amount: 10
+              card_acceptor:
+                mid: '11111'
+              network: VISA
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardTransactionResponse'
+              example:
+                transaction:
+                  type: refund
+                  state: COMPLETION
+                  token: '**REFUND_TRANSACTION_TOKEN**'
+                  user_token: '**USER_TOKEN**'
+                  card_token: '**CARD_TOKEN**'
+                  response:
+                    code: '0000'
+                    memo: Approved or completed successfully
+                  created_time: 2023-03-07T21:46:29Z
+                  user_transaction_time: 2023-03-07T21:46:29Z
+                  settlement_date: 2023-03-07T00:00:00Z
+                  amount: 10
+                  request_amount: 10
+                  gpa:
+                    ledger_balance: 250
+                    available_balance: 250
+                    impacted_amount: 10
+                  currency_code: USD
+                  currency_conversion:
+                    original_amount: 10
+                    conversion_rate: 1
+                    original_currency_code: '840'
+                  network: VISA
+                  subnetwork: VISANET
+                  acquirer_fee_amount: 0
+                  card_acceptor:
+                    mid: '11111'
+                    mcc: '6411'
+                    name: Marqeta Storefront
+                    city: St. Petersburg
+                    state: CA
+                    postal_code: '33705'
+                    country_code: USA
+        '404':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /simulations/cardtransactions/refund.authorization:
+    post:
+      tags:
+        - Simulations Card Transactions
+      summary: Simulate refund authorization
+      description: |-
+        Online refund refers to the `refund.authorization` messages that Visa and Mastercard merchants can send to card issuers.
+        These refund authorizations allow merchants to notify customers of a pending refund and give card issuers the opportunity to decline a refund.
+        Like purchase authorizations, refund authorizations are eventually cleared or completed by a `refund.authorization.clearing` event.
+        That refund authorization clearing is automatically accepted and processed by the Marqeta platform, regardless of your funding model.
+
+        See the full request body structure at <</core-api/simulations-card-transactions#SimulationRequestBody, Request body>>.
+      operationId: RefundAuthorizationEvent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefundAuthorizationEvent'
+            example:
+              card_token: '**CARD_TOKEN**'
+              amount: 10
+              network: VISA
+              card_acceptor:
+                mid: '11111'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardTransactionResponse'
+              example:
+                transaction:
+                  type: refund.authorization
+                  state: PENDING
+                  token: '**REFUND_AUTHORIZATION_TRANSACTION_TOKEN**'
+                  user_token: '**USER_TOKEN**'
+                  card_token: '**CARD_TOKEN**'
+                  response:
+                    code: '0000'
+                    memo: Approved or completed successfully
+                  created_time: 2023-03-07T21:48:48Z
+                  user_transaction_time: 2023-03-07T21:48:48Z
+                  settlement_date: 2023-03-07T00:00:00Z
+                  amount: 10
+                  request_amount: 10
+                  gpa:
+                    ledger_balance: 250
+                    available_balance: 250
+                    impacted_amount: 10
+                  currency_code: USD
+                  currency_conversion:
+                    original_amount: 10
+                    conversion_rate: 1
+                    original_currency_code: '840'
+                  network: VISA
+                  subnetwork: VISANET
+                  acquirer_fee_amount: 0
+                  fraud:
+                    network:
+                      transaction_risk_score: 22
+                      account_risk_score: '2 '
+                  card_acceptor:
+                    mid: '000000000011111'
+                    mcc: '6411'
+                    name: Marqeta Storefront
+                    city: St. Petersbug
+                    state: CA
+                    postal_code: '33705'
+        '404':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /simulations/cardtransactions/refund.authorization.reversal:
+    post:
+      tags:
+        - Simulations Card Transactions
+      summary: Simulate refund authorization reversal
+      description: |-
+        Use this endpoint to reject `refund.authorization` transactions for online refunds.
+
+        See the full request body structure at <</core-api/simulations-card-transactions#SimulationRequestBody, Request body>>.
+      operationId: RefundAuthorizationReversalEvent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefundAuthorizationReversalEvent'
+            example:
+              amount: 10
+              preceding_related_transaction_token: '**AUTHORIZATION_TRANSACTION_TOKEN**'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardTransactionResponse'
+              example:
+                transaction:
+                  type: refund.authorization.reversal
+                  state: CLEARED
+                  token: '**REFUND_AUTHORIZATION_REVERSAL_TRANSACTION_TOKEN**'
+                  user_token: '**USER_TOKEN**'
+                  card_token: '**CARD_TOKEN**'
+                  response:
+                    code: '0000'
+                    memo: Approved or completed successfully
+                  created_time: 2023-03-07T21:52:59Z
+                  user_transaction_time: 2023-03-07T21:52:28Z
+                  settlement_date: 2023-03-07T00:00:00Z
+                  amount: 10
+                  request_amount: 10
+                  gpa:
+                    ledger_balance: 250
+                    available_balance: 250
+                    impacted_amount: -10
+                  currency_code: USD
+                  currency_conversion:
+                    original_amount: 10
+                    conversion_rate: 1
+                    original_currency_code: '840'
+                  preceding_related_transaction_token: '**AUTHORIZATION_TRANSACTION_TOKEN**'
+                  network: VISA
+                  subnetwork: VISANET
+                  acquirer_fee_amount: 0
+                  fraud:
+                    network:
+                      transaction_risk_score: 13
+                      account_risk_score: '4 '
+                  card_acceptor:
+                    mid: '000000000011111'
+                    mcc: '6411'
+                    name: Marqeta Storefront
+                    city: St. Petersbug
+                    state: CA
+                    postal_code: '33705'
+        '404':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /simulations/cardtransactions/refund.authorization.clearing:
+    post:
+      tags:
+        - Simulations Card Transactions
+      summary: Simulate refund authorization clearing
+      description: |-
+        Use this endpoint to simulate online refund clearing.
+
+        See the full request body structure at <</core-api/simulations-card-transactions#SimulationRequestBody, Request body>>.
+      operationId: RefundAuthorizationClearingEvent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefundAuthorizationClearingEvent'
+            example:
+              amount: 10
+              preceding_related_transaction_token: '**AUTHORIZATION_TRANSACTION_TOKEN**'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardTransactionResponse'
+              example:
+                transaction:
+                  type: refund.authorization.clearing
+                  state: COMPLETION
+                  token: '**REFUND_AUTHORIZATION_CLEARING_TRANSACTION_TOKEN**'
+                  user_token: '**USER_TOKEN**'
+                  card_token: '**CARD_TOKEN**'
+                  response:
+                    code: '0000'
+                    memo: Approved or completed successfully
+                  created_time: 2023-03-07T21:54:58Z
+                  user_transaction_time: 2023-03-07T21:54:58Z
+                  settlement_date: 2023-03-07T00:00:00Z
+                  amount: 10
+                  request_amount: 10
+                  gpa:
+                    ledger_balance: 250
+                    available_balance: 250
+                    impacted_amount: 10
+                  currency_code: USD
+                  currency_conversion:
+                    original_amount: 10
+                    conversion_rate: 1
+                    original_currency_code: '840'
+                  preceding_related_transaction_token: '**AUTHORIZATION_TRANSACTION_TOKEN**'
+                  network: VISA
+                  subnetwork: VISANET
+                  acquirer_fee_amount: 0
+                  card_acceptor:
+                    mid: '000000000011111'
+                    mcc: '6411'
+                    name: Marqeta Storefront
+                    city: St. Petersbug
+                    state: CA
+                    postal_code: '33705'
+                    country_code: USA
+        '404':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /simulations/cardtransactions/pindebit:
+    post:
+      tags:
+        - Simulations Card Transactions
+      summary: Simulate PIN-debit
+      description: |-
+        Use this endpoint to simulate transactions using network debit rails.
+
+        See the full request body structure at <</core-api/simulations-card-transactions#SimulationRequestBody, Request body>>.
+      operationId: PindebitEvent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PindebitEvent'
+            example:
+              card_token: '**CARD_TOKEN**'
+              amount: 10
+              network: VISA
+              card_acceptor:
+                mid: '11111'
+              card_options:
+                pin: '6011'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardTransactionResponse'
+              example:
+                transaction:
+                  type: pindebit
+                  state: COMPLETION
+                  token: '**PINDEBIT_TRANSACTION_TOKEN**'
+                  user_token: '**USER_TOKEN'
+                  card_token: '**CARD_TOKEN'
+                  response:
+                    code: '0000'
+                    memo: Approved or completed successfully
+                  created_time: 2023-03-14T18:03:15Z
+                  user_transaction_time: 2023-03-14T18:03:15Z
+                  settlement_date: 2023-03-14T00:00:00Z
+                  amount: 10
+                  request_amount: 10
+                  gpa:
+                    ledger_balance: 240
+                    available_balance: 240
+                    impacted_amount: -10
+                  currency_code: USD
+                  currency_conversion:
+                    original_amount: 10
+                    conversion_rate: 1
+                    original_currency_code: '840'
+                  network: VISA
+                  subnetwork: VISANETDEBIT
+                  acquirer_fee_amount: 0
+                  fraud:
+                    network:
+                      transaction_risk_score: 72
+                      account_risk_score: '9 '
+                  card_acceptor:
+                    mid: '000000000011111'
+                    mcc: '6411'
+                    name: Marqeta Storefront
+                    city: St. Petersbug
+                    state: CA
+                    postal_code: '33705'
+        '404':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /simulations/cardtransactions/pindebit.authorization:
+    post:
+      tags:
+        - Simulations Card Transactions
+      summary: Simulate PIN-debit authorization
+      description: |-
+        Use this endpoint to simulate PIN-debit authorization transactions.
+        The typical use case for dual-message PIN-debit transactions is automated fuel dispenser transactions.
+        The pump sends an initial authorization message to the card issuer.
+        When fueling completes, a clearing message is sent with the final amount.
+
+        See the full request body structure at <</core-api/simulations-card-transactions#SimulationRequestBody, Request body>>.
+      operationId: PindebitAuthorizationEvent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PindebitAuthorizationEvent'
+            example:
+              card_token: '**CARD_TOKEN**'
+              amount: 10
+              network: VISA
+              card_acceptor:
+                mid: '11111'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardTransactionResponse'
+              example:
+                transaction:
+                  type: pindebit.authorization
+                  state: PENDING
+                  token: '**PINDEBIT_AUTHORIZATION_TRANSACTION_TOKEN**'
+                  user_token: '**USER_TOKEN'
+                  card_token: '**CARD_TOKEN'
+                  response:
+                    code: '0000'
+                    memo: Approved or completed successfully
+                  created_time: 2023-03-07T18:09:02Z
+                  user_transaction_time: 2023-03-07T18:09:02Z
+                  settlement_date: 2023-03-07T00:00:00Z
+                  amount: 10
+                  request_amount: 10
+                  gpa:
+                    ledger_balance: 250
+                    available_balance: 240
+                    impacted_amount: -10
+                  currency_code: USD
+                  currency_conversion:
+                    original_amount: 10
+                    conversion_rate: 1
+                    original_currency_code: '840'
+                  network: VISA
+                  subnetwork: VISANETDEBIT
+                  acquirer_fee_amount: 0
+                  fraud:
+                    network:
+                      transaction_risk_score: 87
+                      account_risk_score: '7 '
+                  card_acceptor:
+                    mid: '000000000011111'
+                    mcc: '5542'
+                    name: Marqeta Storefront
+                    city: St. Petersbug
+                    state: CA
+                    postal_code: '33705'
+        '404':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /simulations/cardtransactions/pindebit.authorization.clearing:
+    post:
+      tags:
+        - Simulations Card Transactions
+      summary: Simulate PIN-debit authorization clearing
+      description: |-
+        Use this endpoint to clear `pindebit.authorization` transactions.
+
+        See the full request body structure at <</core-api/simulations-card-transactions#SimulationRequestBody, Request body>>.
+      operationId: PindebitAuthorizationClearingEvent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PindebitAuthorizationClearingEvent'
+            example:
+              amount: 10
+              preceding_related_transaction_token: '**AUTHORIZATION_TRANSACTION_TOKEN**'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardTransactionResponse'
+              example:
+                transaction:
+                  type: pindebit.authorization.clearing
+                  state: COMPLETION
+                  token: '**PINDEBIT_AUTHORIZATION_CLEARING_TRANSACTION_TOKEN**'
+                  user_token: '**USER_TOKEN'
+                  card_token: '**CARD_TOKEN'
+                  response:
+                    code: '0000'
+                    memo: Approved or completed successfully
+                  created_time: 2023-02-22T18:08:16Z
+                  user_transaction_time: 2023-02-22T18:08:15Z
+                  settlement_date: 2023-02-22T00:00:00Z
+                  amount: 10
+                  amount_to_be_released: 10
+                  request_amount: 10
+                  gpa:
+                    ledger_balance: 240
+                    available_balance: 240
+                    impacted_amount: -10
+                  currency_code: USD
+                  currency_conversion:
+                    original_amount: 10
+                    conversion_rate: 1
+                    original_currency_code: '840'
+                  preceding_related_transaction_token: '**AUTHORIZATION_TRANSACTION_TOKEN**'
+                  network: VISA
+                  subnetwork: VISANET
+                  acquirer_fee_amount: 0
+                  card_acceptor:
+                    mid: '000000000011111'
+                    mcc: '5542'
+                    country_code: USA
+        '404':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /simulations/cardtransactions/pindebit.authorization.reversal:
+    post:
+      tags:
+        - Simulations Card Transactions
+      summary: Simulate PIN-debit authorization reversal
+      description: |-
+        Use this endpoint to reverse `pindebit.authorization` transactions.
+
+        See the full request body structure at <</core-api/simulations-card-transactions#SimulationRequestBody, Request body>>.
+      operationId: PindebitAuthorizationReversalEvent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PindebitAuthorizationReversalEvent'
+            example:
+              amount: 10
+              preceding_related_transaction_token: '**AUTHORIZATION_TRANSACTION_TOKEN**'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardTransactionResponse'
+              example:
+                transaction:
+                  type: pindebit.authorization.reversal
+                  state: CLEARED
+                  token: '**PINDEBIT_AUTHORIZATION_REVERSAL_TRANSACTION_TOKEN**'
+                  user_token: '**USER_TOKEN'
+                  card_token: '**CARD_TOKEN'
+                  response:
+                    code: '0000'
+                    memo: Approved or completed successfully
+                  created_time: 2023-03-07T18:12:39Z
+                  user_transaction_time: 2023-03-07T18:12:34Z
+                  settlement_date: 2023-03-07T00:00:00Z
+                  amount: 10
+                  request_amount: 10
+                  gpa:
+                    ledger_balance: 250
+                    available_balance: 250
+                    impacted_amount: 10
+                  currency_code: USD
+                  currency_conversion:
+                    original_amount: 10
+                    conversion_rate: 1
+                    original_currency_code: '840'
+                  preceding_related_transaction_token: '**AUTHORIZATION_TRANSACTION_TOKEN**'
+                  network: VISA
+                  subnetwork: VISANET
+                  acquirer_fee_amount: 0
+                  fraud:
+                    network:
+                      transaction_risk_score: 75
+                      account_risk_score: '2 '
+                  card_acceptor:
+                    mid: '000000000011111'
+                    mcc: '5542'
+                    name: Marqeta Storefront
+                    city: St. Petersbug
+                    state: CA
+                    postal_code: '33705'
+        '404':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /simulations/cardtransactions/pindebit.cashback:
+    post:
+      tags:
+        - Simulations Card Transactions
+      summary: Simulate PIN-debit cash back
+      description: |-
+        Simulate a PIN-debit transaction for cash back requested at a point-of-sale terminal.
+
+        See the full request body structure at <</core-api/simulations-card-transactions#SimulationRequestBody, Request body>>.
+      operationId: PindebitCashbackEvent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PindebitCashbackEvent'
+            example:
+              card_token: '**CARD_TOKEN**'
+              amount: 10
+              cash_back_amount: 5
+              card_acceptor:
+                mid: '11111'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardTransactionResponse'
+              example:
+                transaction:
+                  type: pindebit.cashback
+                  state: COMPLETION
+                  token: '**PINDEBIT_CASHBACK_TRANSACTION_TOKEN**'
+                  user_token: '**USER_TOKEN'
+                  card_token: '**CARD_TOKEN'
+                  response:
+                    code: '0000'
+                    memo: Approved or completed successfully
+                  created_time: 2023-03-07T18:13:49Z
+                  user_transaction_time: 2023-03-07T18:13:49Z
+                  settlement_date: 2023-03-07T00:00:00Z
+                  amount: 15
+                  cash_back_amount: 5
+                  request_amount: 15
+                  gpa:
+                    ledger_balance: 235
+                    available_balance: 235
+                    impacted_amount: -15
+                  currency_code: USD
+                  currency_conversion:
+                    original_amount: 15
+                    conversion_rate: 1
+                    original_currency_code: '840'
+                  network: VISA
+                  subnetwork: VISANETDEBIT
+                  acquirer_fee_amount: 0
+                  fraud:
+                    network:
+                      transaction_risk_score: 66
+                      account_risk_score: '5 '
+                  card_acceptor:
+                    mid: '000000000011111'
+                    mcc: '6411'
+                    name: Marqeta Storefront
+                    city: St. Petersbug
+                    state: CA
+                    postal_code: '33705'
+        '404':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /simulations/cardtransactions/pindebit.refund:
+    post:
+      tags:
+        - Simulations Card Transactions
+      summary: Simulate PIN-debit refund
+      description: |-
+        Use this endpoint to simulate a PIN-debit transaction refund.
+
+        See the full request body structure at <</core-api/simulations-card-transactions#SimulationRequestBody, Request body>>.
+      operationId: PindebitRefundEvent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PindebitRefundEvent'
+            example:
+              card_token: '**CARD_TOKEN**'
+              amount: 10
+              card_acceptor:
+                mid: '11111'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardTransactionResponse'
+              example:
+                transaction:
+                  type: pindebit.refund
+                  state: COMPLETION
+                  token: '**PINDEBIT_REFUND_TRANSACTION_TOKEN**'
+                  user_token: '**USER_TOKEN'
+                  card_token: '**CARD_TOKEN'
+                  response:
+                    code: '0000'
+                    memo: Approved or completed successfully
+                  created_time: 2023-03-07T18:15:15Z
+                  user_transaction_time: 2023-03-07T18:15:15Z
+                  settlement_date: 2023-03-07T00:00:00Z
+                  amount: 10
+                  request_amount: 10
+                  gpa:
+                    ledger_balance: 260
+                    available_balance: 260
+                    impacted_amount: 10
+                  currency_code: USD
+                  currency_conversion:
+                    original_amount: 10
+                    conversion_rate: 1
+                    original_currency_code: '840'
+                  network: VISA
+                  subnetwork: VISANETDEBIT
+                  acquirer_fee_amount: 0
+                  fraud:
+                    network:
+                      transaction_risk_score: 77
+                      account_risk_score: '7 '
+                  card_acceptor:
+                    mid: '000000000011111'
+                    mcc: '6411'
+                    name: Marqeta Storefront
+                    city: St. Petersbug
+                    state: CA
+                    postal_code: '33705'
+        '404':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /simulations/cardtransactions/pindebit.atm.withdrawal:
+    post:
+      tags:
+        - Simulations Card Transactions
+      summary: Simulate PIN-debit ATM withdrawal
+      description: |-
+        Use this endpoint to simulate a cash withdrawal at an ATM.
+
+        See the full request body structure at <</core-api/simulations-card-transactions#SimulationRequestBody, Request body>>.
+      operationId: PindebitAtmWithdrawalEvent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PindebitAtmWithdrawalEvent'
+            example:
+              card_token: '**CARD_TOKEN**'
+              amount: 10
+              cash_back_amount: 10
+              card_acceptor:
+                mid: '11111'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardTransactionResponse'
+              example:
+                transaction:
+                  type: pindebit.atm.withdrawal
+                  state: COMPLETION
+                  token: '**PINDEBIT_ATM_WITHDRAWAL_TRANSACTION_TOKEN**'
+                  user_token: '**USER_TOKEN**'
+                  card_token: '**CARD_TOKEN**'
+                  response:
+                    code: '0000'
+                    memo: Approved or completed successfully
+                  created_time: 2023-03-07T18:16:25Z
+                  user_transaction_time: 2023-03-07T18:16:25Z
+                  settlement_date: 2023-03-07T00:00:00Z
+                  amount: 10
+                  request_amount: 10
+                  gpa:
+                    ledger_balance: 240
+                    available_balance: 240
+                    impacted_amount: -10
+                  currency_code: USD
+                  currency_conversion:
+                    original_amount: 10
+                    conversion_rate: 1
+                    original_currency_code: '840'
+                  network: VISA
+                  subnetwork: VISANETDEBIT
+                  acquirer_fee_amount: 0
+                  fraud:
+                    network:
+                      transaction_risk_score: 90
+                      account_risk_score: '1 '
+                  card_acceptor:
+                    mid: '000000000011111'
+                    mcc: '6411'
+                    name: Marqeta Storefront
+                    city: St. Petersbug
+                    state: CA
+                    postal_code: '33705'
+        '404':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /simulations/cardtransactions/pindebit.balanceinquiry:
+    post:
+      tags:
+        - Simulations Card Transactions
+      summary: Simulate PIN-debit balance inquiry
+      description: |-
+        Use this endpoint to simulate a balance inquiry via the card network.
+        This is a non-financial transaction.
+
+        See the full request body structure at <</core-api/simulations-card-transactions#SimulationRequestBody, Request body>>.
+      operationId: PindebitBalanceInquiryEvent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PindebitBalanceinquiryEvent'
+            example:
+              card_token: '**CARD_TOKEN**'
+              account_type: savings
+              card_acceptor:
+                mid: '11111'
+                partial_approval_capable: 'true'
+              network: VISA
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardTransactionResponse'
+              example:
+                transaction:
+                  type: pindebit.balanceinquiry
+                  state: CLEARED
+                  token: '**PINDEBIT_BALANCEINQUIRY_TRANSACTION_TOKEN**'
+                  user_token: '**USER_TOKEN**'
+                  card_token: '**CARD_TOKEN**'
+                  response:
+                    code: '0000'
+                    memo: Approved or completed successfully
+                  created_time: 2023-02-22T18:08:39Z
+                  user_transaction_time: 2023-02-22T18:08:39Z
+                  settlement_date: 2023-02-22T00:00:00Z
+                  amount: 0
+                  request_amount: 0
+                  gpa:
+                    ledger_balance: 250
+                    available_balance: 250
+                  currency_code: USD
+                  currency_conversion:
+                    original_amount: 0
+                    conversion_rate: 1
+                    original_currency_code: '840'
+                  network: VISA
+                  subnetwork: VISANETDEBIT
+                  acquirer_fee_amount: 0
+                  fraud:
+                    network:
+                      transaction_risk_score: 93
+                      account_risk_score: '1 '
+                  card_acceptor:
+                    mid: '000000000011111'
+                    mcc: '6411'
+                    name: Marqeta Storefront
+                    city: St. Petersbug
+                    state: CA
+                    postal_code: '33705'
+        '404':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /simulations/cardtransactions/pindebit.quasi.cash:
+    post:
+      tags:
+        - Simulations Card Transactions
+      summary: Simulate PIN-debit quasi-cash
+      description: |-
+        Use this endpoint to simulate `pindebit.quasi.cash` transactions.
+        This PIN-debit transaction occurs at a point-of-sale terminal for items equivalent to cash, such as traveler's checks, money orders, foreign currency, or gaming chips.
+        This simulation can be used to test single-message cash back transactions.
+
+        See the full request body structure at <</core-api/simulations-card-transactions#SimulationRequestBody, Request body>>.
+      operationId: PindebitQuasiCashEvent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PindebitQuasiCashEvent'
+            example:
+              card_token: '**CARD_TOKEN**'
+              amount: 10
+              card_acceptor:
+                mid: '11111'
+              network: VISA
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardTransactionResponse'
+              example:
+                transaction:
+                  type: pindebit.quasi.cash
+                  state: COMPLETION
+                  token: '**PINDEBIT_QUASI_CASH_TRANSACTION_TOKEN**'
+                  user_token: '**USER_TOKEN**'
+                  card_token: '**CARD_TOKEN**'
+                  response:
+                    code: '0000'
+                    memo: Approved or completed successfully
+                  created_time: 2023-03-23T22:30:08Z
+                  user_transaction_time: 2023-03-23T22:30:08Z
+                  settlement_date: 2023-03-23T00:00:00Z
+                  amount: 10
+                  request_amount: 10
+                  gpa:
+                    ledger_balance: 240
+                    available_balance: 240
+                    impacted_amount: -10
+                  currency_code: USD
+                  currency_conversion:
+                    original_amount: 10
+                    conversion_rate: 1
+                    original_currency_code: '840'
+                  network: VISA
+                  subnetwork: VISANETDEBIT
+                  acquirer_fee_amount: 0
+                  fraud:
+                    network:
+                      transaction_risk_score: 69
+                      account_risk_score: '8 '
+                  card_acceptor:
+                    mid: '000000000011111'
+                    mcc: '6411'
+                    name: Marqeta Storefront
+                    city: St. Petersbug
+                    state: CA
+                    postal_code: '33705'
+        '404':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /simulations/cardtransactions/original.credit.authorization:
+    post:
+      tags:
+        - Simulations Card Transactions
+      summary: Simulate OCT authorization
+      description: |-
+        Use this endpoint to simulate `original.credit.authorization` transactions.
+        This is for original credit transaction (OCT) authorization for disbursing funds to a credit card.
+        This simulation can be used to test dual-message OCT transactions.
+
+        See the full request body structure at <</core-api/simulations-card-transactions#SimulationRequestBody, Request body>>.
+      operationId: OriginalCreditAuthorizationEvent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OriginalCreditAuthorizationEvent'
+            example:
+              amount: 10
+              card_token: '**CARD_TOKEN**'
+              card_acceptor:
+                mid: '11111'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardTransactionResponse'
+              example:
+                transaction:
+                  type: original.credit.authorization
+                  state: PENDING
+                  token: '**ORIGINAL_CREDIT_AUTHORIZATION_TOKEN**'
+                  user_token: '**USER_TOKEN**'
+                  card_token: '**CARD_TOKEN**'
+                  response:
+                    code: '0000'
+                    memo: Approved or completed successfully
+                  created_time: 2023-03-23T23:19:25Z
+                  user_transaction_time: 2023-03-23T23:19:25Z
+                  settlement_date: 2023-03-23T00:00:00Z
+                  amount: 10
+                  request_amount: 10
+                  gpa:
+                    ledger_balance: 240
+                    available_balance: 240
+                    impacted_amount: 10
+                  currency_code: USD
+                  currency_conversion:
+                    original_amount: 10
+                    conversion_rate: 1
+                    original_currency_code: '840'
+                  network: VISA
+                  subnetwork: VISANET
+                  acquirer_fee_amount: 0
+                  fraud:
+                    network:
+                      transaction_risk_score: 83
+                      account_risk_score: '5 '
+                  card_acceptor:
+                    mid: '000000000001234'
+                    mcc: '6411'
+                    name: Marqeta Storefront
+                    city: St. Petersbug
+                    state: CA
+                    postal_code: '33705'
+        '404':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /simulations/cardtransactions/original.credit.authorization.clearing:
+    post:
+      tags:
+        - Simulations Card Transactions
+      summary: Simulate OCT authorization clearing
+      description: |-
+        Use this endpoint to simulate `original.credit.authorization.clearing` transactions, which completes an original credit transaction (OCT) authorization.
+        This simulation can be used to test dual-message OCT transactions.
+
+        See the full request body structure at <</core-api/simulations-card-transactions#SimulationRequestBody, Request body>>.
+      operationId: OriginalCreditAuthorizationClearingEvent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OriginalCreditAuthorizationClearingEvent'
+            example:
+              amount: 10
+              preceding_related_transaction_token: '**AUTHORIZATION_TRANSACTION_TOKEN**'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardTransactionResponse'
+              example:
+                transaction:
+                  type: original.credit.authorization.clearing
+                  state: CLEARED
+                  token: '**ORIGINAL_CREDIT_AUTHROIZATION_TOKEN**'
+                  user_token: '**USER_TOKEN**'
+                  card_token: '**CARD_TOKEN**'
+                  response:
+                    code: '0000'
+                    memo: Approved or completed successfully
+                  created_time: 2023-03-23T23:25:44Z
+                  user_transaction_time: 2023-03-23T23:19:25Z
+                  settlement_date: 2023-03-23T00:00:00Z
+                  amount: 10
+                  request_amount: 10
+                  gpa:
+                    ledger_balance: 240
+                    available_balance: 240
+                    impacted_amount: -10
+                  currency_code: USD
+                  currency_conversion:
+                    original_amount: 10
+                    conversion_rate: 1
+                    original_currency_code: '840'
+                  preceding_related_transaction_token: '**AUTHORIZATION_TRANSACTION_TOKEN**'
+                  network: VISA
+                  subnetwork: VISANET
+                  acquirer_fee_amount: 0
+                  fraud:
+                    network:
+                      transaction_risk_score: 1
+                      account_risk_score: '7 '
+                  card_acceptor:
+                    mid: '000000000001234'
+                    mcc: '6411'
+                    name: Marqeta Storefront
+                    city: St. Petersbug
+                    state: CA
+                    postal_code: '33705'
+        '404':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /simulations/cardtransactions/original.credit.auth_plus_capture:
+    post:
+      tags:
+        - Simulations Card Transactions
+      summary: Simulate OCT authorization and capture
+      description: |-
+        Use this endpoint to simulate `original.credit.auth_plus_capture` transactions for single-message original credit transaction (OCT) for disbursing funds to a credit card.
+        This simulation can be used to test single-message OCT transactions.
+
+        See the full request body structure at <</core-api/simulations-card-transactions#SimulationRequestBody, Request body>>.
+      operationId: OriginalCreditAuthPlusCaptureEvent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OriginalCreditAuthPlusCaptureEvent'
+            example:
+              card_token: '**CARD_TOKEN**'
+              amount: 10
+              card_acceptor:
+                mid: '11111'
+              network: VISA
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardTransactionResponse'
+              example:
+                transaction:
+                  type: original.credit.auth_plus_capture
+                  state: COMPLETION
+                  token: '**ORIGINAL_CREDIT_AUTH_PLUS_CAPTURE_TRANSACTION_TOKEN**'
+                  user_token: '**USER_TOKEN**'
+                  card_token: '**CARD_TOKEN**'
+                  response:
+                    code: '0000'
+                    memo: Approved or completed successfully
+                  created_time: 2023-03-23T23:28:03Z
+                  user_transaction_time: 2023-03-23T23:28:03Z
+                  settlement_date: 2023-03-23T00:00:00Z
+                  amount: 10
+                  request_amount: 10
+                  gpa:
+                    ledger_balance: 240
+                    available_balance: 240
+                    impacted_amount: 10
+                  currency_code: USD
+                  currency_conversion:
+                    original_amount: 10
+                    conversion_rate: 1
+                    original_currency_code: '840'
+                  network: VISA
+                  subnetwork: VISANETDEBIT
+                  acquirer_fee_amount: 0
+                  fraud:
+                    network:
+                      transaction_risk_score: 50
+                      account_risk_score: '7 '
+                  card_acceptor:
+                    mid: '000000000001111'
+                    mcc: '6411'
+                    name: Marqeta Storefront
+                    city: St. Petersbug
+                    state: CA
+                    postal_code: '33705'
+        '404':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /simulations/cardtransactions/original.credit.auth_plus_capture.reversal:
+    post:
+      tags:
+        - Simulations Card Transactions
+      summary: Simulate OCT authorization and capture reversal
+      description: |-
+        Use this endpoint to simulate `original.credit.auth_plus_capture.reversal` transactions to reverse the financial impact of a single-message original credit transaction (OCT).
+        This simulation can be used to reverse single-message OCT transactions.
+
+        See the full request body structure at <</core-api/simulations-card-transactions#SimulationRequestBody, Request body>>.
+      operationId: OriginalCreditAuthPlusCaptureReversalEvent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OriginalCreditAuthPlusCaptureReversalEvent'
+            example:
+              amount: 10
+              preceding_related_transaction_token: '**AUTHORIZATION_TRANSACTION_TOKEN**'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardTransactionResponse'
+              example:
+                transaction:
+                  type: original.credit.auth_plus_capture.reversal
+                  state: COMPLETION
+                  token: '**ORIGINAL_CREDIT_AUTH_PLUS_CAPTURE_REVERSAL_TRANSACTION_TOKEN**'
+                  user_token: '**USER_TOKEN**'
+                  card_token: '**CARD_TOKEN**'
+                  response:
+                    code: '0000'
+                    memo: Approved or completed successfully
+                  created_time: 2023-03-23T23:30:25Z
+                  user_transaction_time: 2023-03-23T23:28:03Z
+                  settlement_date: 2023-03-23T00:00:00Z
+                  amount: 10
+                  request_amount: 10
+                  gpa:
+                    ledger_balance: 100
+                    available_balance: 80
+                    impacted_amount: -10
+                  currency_code: USD
+                  currency_conversion:
+                    original_amount: 10
+                    conversion_rate: 1
+                    original_currency_code: '840'
+                  preceding_related_transaction_token: '**AUTHORIZATION_TRANSACTION_TOKEN**'
+                  network: VISA
+                  subnetwork: VISANET
+                  acquirer_fee_amount: 0
+                  fraud:
+                    description: Contains one or more fraud determinations by the
+                      card network that apply to either the transaction or the cardholder's
+                      account.
+                    x-allowableValues: Existing `fraud` object
+                    network:
+                      description: Contains network-provided information about fraud
+                        determinations.
+                      x-allowableValues: '`account_risk_score`, `account_risk_score_reason_code`,
+                        `transaction_risk_score`, `transaction_risk_score_reason_code`,
+                        `transaction_risk_score_reason_description`'
+                      transaction_risk_score:
+                        description: |-
+                          Network-provided risk score for the transaction.
+                          A higher score indicates higher risk.
+                          Useful for making authorization decisions.
+                        x-allowableValues: |-
+                          Mastercard: 0-999
+
+                          Visa: 1-99
+                      account_risk_score: '4 '
+                  card_acceptor:
+                    mid: '000000000001111'
+                    mcc: '6411'
+                    name: Marqeta Storefront
+                    city: St. Petersbug
+                    state: CA
+                    postal_code: '33705'
+        '404':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /simulations/directdeposits/credit:
+    post:
+      tags:
+        - Simulations Direct Deposits
+      summary: Simulate credit
+      description: |-
+        Use this endpoint to simulate crediting funds to a deposit account.
+
+        Simulate a direct deposit of funds to a user account by including the deposit account number of the account to be credited.
+        You can find the account number in the `account_number` field of the response when you create a new deposit account.
+        Alternatively, you can retrieve it by sending a `GET` request to the `/depositaccounts/user/{user_token}` endpoint.
+        For more information, see <</core-api/direct-deposits, Direct Deposit>>.
+
+        See the full request body structure at <</core-api/simulations-direct-deposits#SimulationRequestBody, Request body>>.
+      operationId: DirectDepositsCreditEvent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DirectDepositSimulationRequest'
+            example:
+              amount: 10
+              account_number: '**ACCOUNT_NUMBER**'
+              settlement_date: 2023-02-03T13:22:42Z
+              earlyPayEligible: false
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DirectDepositSimulationResponse'
+              example:
+                token: '**DIRECT_DEPOSIT_TOKEN**'
+                user_token: '**USER_TOKEN**'
+                type: CREDIT
+                state: PENDING
+                state_reason: testing
+                amount: 10
+                created_time: 2023-03-23T19:34:05Z
+                direct_deposit_account_token: '**DIRECT_DEPOSIT_ACCT_TOKEN**'
+                last_modified_time: 2023-03-23T19:34:05Z
+                settlement_date: 2023-02-03T13:22:42Z
+        '404':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /simulations/directdeposits/debit:
+    post:
+      tags:
+        - Simulations Direct Deposits
+      summary: Simulate debit
+      description: |-
+        Use this endpoint to simulate debiting funds from a deposit account.
+
+        Simulate a direct deposit of funds to a user account by including the deposit account number of the account to be debited.
+        You can find the account number in the `account_number` field of the response when you create a new deposit account.
+        Alternatively, you can retrieve it by sending a `GET` request to the `/depositaccounts/user/{user_token}` endpoint.
+        For more information, see <</core-api/direct-deposits, Direct Deposit>>.
+
+        See the full request body structure at <</core-api/simulations-direct-deposits#SimulationRequestBody, Request body>>.
+      operationId: DirectDepositsDebitEvent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DirectDepositSimulationRequest'
+            example:
+              amount: 10
+              account_number: '**ACCOUNT_NUMBER**'
+              settlement_date: 2023-02-03T13:22:42Z
+              earlyPayEligible: false
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DirectDepositSimulationResponse'
+              example:
+                token: '**DIRECT_DEPOSIT_TOKEN**'
+                user_token: '**USER_TOKEN**'
+                type: DEBIT
+                state: PENDING
+                state_reason: testing
+                amount: 10
+                created_time: 2023-03-23T19:34:05Z
+                direct_deposit_account_token: '**DIRECT_DEPOSIT_ACCT_TOKEN**'
+                last_modified_time: 2023-03-23T19:34:05Z
+                settlement_date: 2023-02-03T13:22:42Z
+        '404':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    Error:
+      title: Error
+      type: object
+      properties:
+        error_code:
+          type: string
+        error_message:
+          type: string
+    response:
+      required:
+        - code
+        - memo
+      type: object
+      properties:
+        code:
+          type: string
+          description: |-
+            Four-digit code corresponding with the outcome of the attempted transaction type.
+
+            * 0000 – passed
+            * 0001 – did not pass
+          x-allowableValues: Four-digit code
+        memo:
+          type: string
+          description: Information on the outcome of the attempted transaction type.
+          x-allowableValues: 255 char max
+        additional_information:
+          type: string
+          description: Information about the relevant velocity control for the transaction,
+            if applicable.
+          x-allowableValues: |-
+            The `additional_information` field returns a string in the following format: `<Velocity control name>, cumulative transaction amount is <X>`, where `X` is the cumulative transaction amount value calculated by Marqeta.
+            For example: `500 max spend per day, cumulative transaction amount is 750`.
+      description: Contains the Marqeta platform's assertion as to whether its address
+        verification data matches that provided by the cardholder.
+      x-allowableValues: Existing `response` object
+    CardTransactionResponse:
+      title: Card Transaction Simulation Response
+      type: object
+      properties:
+        transaction:
+          $ref: '#/components/schemas/TransactionModel'
+      additionalProperties: false
+      description: Contains information about the transaction that was simulated.
+    CardTransactionSimulation:
+      type: object
+      properties:
+        event_type:
+          type: string
+          readOnly: true
+          x-mq-internal: true
+        cash_back_amount:
+          type: number
+          description: The cashback amount requested.
+        is_preauthorization:
+          type: boolean
+          description: |-
+            Indicates if the transaction is a pre-authorization.
+            Set to `true` to mark the amount as an authorization only.
+          default: false
+          x-allowableValues: '`true` or `false`'
+        force_post:
+          type: boolean
+          description: |-
+            Set to `true` to simulate a forced clearing transaction.
+
+            *NOTE:* If you set this field to `true`, you must also set the `original_transaction_token` field to an existing transaction token (the transaction does not need to be related).
+          default: false
+          x-allowableValues: '`true` or `false`'
+        fees:
+          type: array
+          description: |-
+            List of fees associated with the transaction.
+
+            This array is returned if it exists in the resource.
+          items:
+            $ref: '#/components/schemas/network_fee_model'
+          x-allowableValues: Existing `fees` array
+        card_options:
+          $ref: '#/components/schemas/card_options'
+        pos:
+          $ref: '#/components/schemas/pos'
+        network:
+          type: string
+          description: Indicates which card network was used to complete the transaction.
+          enum:
+            - VISA
+            - MASTERCARD
+            - DISCOVER
+            - PULSE
+        sub_network:
+          type: string
+          description: Indicates which subnetwork used to complete the transaction.
+          enum:
+            - VISANET
+            - VISANETDEBIT
+            - VISAINTERLINK
+            - VISAPLUS
+            - MAESTRO
+        currency_conversion:
+          $ref: '#/components/schemas/currency_conversion'
+        currency_code:
+          type: string
+          description: Currency type of the transaction.
+          enum:
+            - AED
+            - AFN
+            - ALL
+            - AMD
+            - ANG
+            - AOA
+            - ARS
+            - AUD
+            - AWG
+            - AZN
+            - BAM
+            - BBD
+            - BDT
+            - BGN
+            - BHD
+            - BIF
+            - BMD
+            - BND
+            - BOB
+            - BRL
+            - BSD
+            - BTN
+            - BWP
+            - BYR
+            - BZD
+            - CAD
+            - CDF
+            - CHF
+            - CLP
+            - CNY
+            - COP
+            - CRC
+            - CUC
+            - CUP
+            - CVE
+            - CZK
+            - DJF
+            - DKK
+            - DOP
+            - DZD
+            - EGP
+            - ERN
+            - ETB
+            - EUR
+            - FJD
+            - FKP
+            - GBP
+            - GEL
+            - GGP
+            - GHS
+            - GIP
+            - GMD
+            - GNF
+            - GTQ
+            - GYD
+            - HKD
+            - HNL
+            - HRK
+            - HTG
+            - HUF
+            - IDR
+            - ILS
+            - IMP
+            - INR
+            - IQD
+            - IRR
+            - ISK
+            - JEP
+            - JMD
+            - JOD
+            - JPY
+            - KES
+            - KGS
+            - KHR
+            - KMF
+            - KPW
+            - KRW
+            - KWD
+            - KYD
+            - KZT
+            - LAK
+            - LBP
+            - LKR
+            - LRD
+            - LSL
+            - LYD
+            - MAD
+            - MDL
+            - MGA
+            - MKD
+            - MMK
+            - MNT
+            - MOP
+            - MRO
+            - MUR
+            - MVR
+            - MWK
+            - MXN
+            - MYR
+            - MZN
+            - NAD
+            - NGN
+            - NIO
+            - NOK
+            - NPR
+            - NZD
+            - OMR
+            - PAB
+            - PEN
+            - PGK
+            - PHP
+            - PKR
+            - PLN
+            - PYG
+            - QAR
+            - RON
+            - RSD
+            - RUB
+            - RWF
+            - SAR
+            - SBD
+            - SCR
+            - SDG
+            - SEK
+            - SGD
+            - SHP
+            - SLL
+            - SOS
+            - SPL
+            - SRD
+            - STD
+            - SVC
+            - SYP
+            - SZL
+            - THB
+            - TJS
+            - TMT
+            - TND
+            - TOP
+            - TRY
+            - TTD
+            - TVD
+            - TWD
+            - TZS
+            - UAH
+            - UGX
+            - USD
+            - UYU
+            - UZS
+            - VEF
+            - VND
+            - VUV
+            - WST
+            - XAF
+            - XCD
+            - XDR
+            - XOF
+            - XPF
+            - YER
+            - ZAR
+            - ZMW
+            - ZWD
+        account_funding:
+          $ref: '#/components/schemas/account_funding_request'
+        original_credit:
+          $ref: '#/components/schemas/original_credit'
+      discriminator:
+        propertyName: event_type
+        mapping:
+          account.funding.authorization: '#/components/schemas/AccountFundingAuthorizationEvent'
+          account.funding.authorization.clearing: '#/components/schemas/AccountFundingAuthorizationClearingEvent'
+          account.funding.authorization.reversal: '#/components/schemas/AccountFundingAuthorizationReversalEvent'
+          account.funding.auth_plus_capture: '#/components/schemas/AccountFundingAuthPlusCaptureEvent'
+          account.funding.auth_plus_capture.reversal: '#/components/schemas/AccountFundingAuthPlusCaptureReversalEvent'
+          authorization: '#/components/schemas/AuthorizationEvent'
+          authorization.advice: '#/components/schemas/AuthorizationAdviceEvent'
+          authorization.clearing: '#/components/schemas/AuthorizationClearingEvent'
+          authorization.reversal: '#/components/schemas/AuthorizationReversalEvent'
+          authorization.incremental: '#/components/schemas/AuthorizationIncrementalEvent'
+          authorization.cashback: '#/components/schemas/AuthorizationCashbackEvent'
+          authorization.quasi.cash: '#/components/schemas/AuthorizationQuasiCashEvent'
+          authorization.clearing.quasi.cash: '#/components/schemas/AuthorizationClearingQuasiCashEvent'
+          authorization.atm.withdrawal: '#/components/schemas/AuthorizationAtmWithdrawalEvent'
+          authorization.clearing.atm.withdrawal: '#/components/schemas/AuthorizationClearingAtmWithdrawalEvent'
+          refund: '#/components/schemas/RefundEvent'
+          refund.authorization: '#/components/schemas/RefundAuthorizationEvent'
+          refund.authorization.reversal: '#/components/schemas/RefundAuthorizationReversalEvent'
+          refund.authorization.clearing: '#/components/schemas/RefundAuthorizationClearingEvent'
+          pindebit: '#/components/schemas/PindebitEvent'
+          pindebit.authorization: '#/components/schemas/PindebitAuthorizationEvent'
+          pindebit.authorization.clearing: '#/components/schemas/PindebitAuthorizationClearingEvent'
+          pindebit.authorization.reversal: '#/components/schemas/PindebitAuthorizationReversalEvent'
+          pindebit.cashback: '#/components/schemas/PindebitCashbackEvent'
+          pindebit.refund: '#/components/schemas/PindebitRefundEvent'
+          pindebit.atm.withdrawal: '#/components/schemas/PindebitAtmWithdrawalEvent'
+          pindebit.balanceinquiry: '#/components/schemas/PindebitBalanceinquiryEvent'
+          pindebit.quasi.cash: '#/components/schemas/PindebitQuasiCashEvent'
+          original.credit.authorization: '#/components/schemas/OriginalCreditAuthorizationEvent'
+          original.credit.authorization.clearing: '#/components/schemas/OriginalCreditAuthorizationClearingEvent'
+          original.credit.auth_plus_capture: '#/components/schemas/OriginalCreditAuthPlusCaptureEvent'
+          original.credit.auth_plus_capture.reversal: '#/components/schemas/OriginalCreditAuthPlusCaptureReversalEvent'
+    AuthorizationEvent:
+      required:
+        - card_token
+      properties:
+        card_token:
+          $ref: '#/components/schemas/token'
+        card_acceptor:
+          required:
+            - mid
+          properties:
+            mid:
+              type: string
+              description: The merchant identifier.
+          allOf:
+            - $ref: '#/components/schemas/transaction_card_acceptor'
+        account_name_verification:
+          $ref: '#/components/schemas/account_name_verification_model'
+      allOf:
+        - $ref: '#/components/schemas/CardTransactionSimulation'
+    AuthorizationClearingEvent:
+      required:
+        - amount
+      properties:
+        amount:
+          $ref: '#/components/schemas/amount'
+        card_acceptor:
+          allOf:
+            - $ref: '#/components/schemas/transaction_card_acceptor'
+      allOf:
+        - $ref: '#/components/schemas/CardTransactionSimulation'
+    AuthorizationReversalEvent:
+      required:
+        - preceding_related_transaction_token
+      properties:
+        preceding_related_transaction_token:
+          $ref: '#/components/schemas/token'
+        card_acceptor:
+          allOf:
+            - $ref: '#/components/schemas/transaction_card_acceptor'
+        account_name_verification:
+          $ref: '#/components/schemas/account_name_verification_model'
+      allOf:
+        - $ref: '#/components/schemas/CardTransactionSimulation'
+    AuthorizationAdviceEvent:
+      required:
+        - amount
+        - preceding_related_transaction_token
+      properties:
+        preceding_related_transaction_token:
+          $ref: '#/components/schemas/token'
+        amount:
+          $ref: '#/components/schemas/amount'
+        card_acceptor:
+          allOf:
+            - $ref: '#/components/schemas/transaction_card_acceptor'
+      allOf:
+        - $ref: '#/components/schemas/CardTransactionSimulation'
+    AuthorizationIncrementalEvent:
+      required:
+        - amount
+        - preceding_related_transaction_token
+      properties:
+        preceding_related_transaction_token:
+          $ref: '#/components/schemas/token'
+        amount:
+          $ref: '#/components/schemas/amount'
+        card_acceptor:
+          allOf:
+            - $ref: '#/components/schemas/transaction_card_acceptor'
+      allOf:
+        - $ref: '#/components/schemas/CardTransactionSimulation'
+    AccountFundingAuthorizationEvent:
+      required:
+        - amount
+        - card_token
+      properties:
+        card_token:
+          $ref: '#/components/schemas/token'
+        amount:
+          $ref: '#/components/schemas/amount'
+        card_acceptor:
+          allOf:
+            - $ref: '#/components/schemas/transaction_card_acceptor'
+      allOf:
+        - $ref: '#/components/schemas/CardTransactionSimulation'
+    AccountFundingAuthorizationClearingEvent:
+      required:
+        - amount
+      properties:
+        amount:
+          $ref: '#/components/schemas/amount'
+        card_acceptor:
+          allOf:
+            - $ref: '#/components/schemas/transaction_card_acceptor'
+      allOf:
+        - $ref: '#/components/schemas/CardTransactionSimulation'
+    AccountFundingAuthorizationReversalEvent:
+      required:
+        - amount
+        - preceding_related_transaction_token
+      properties:
+        preceding_related_transaction_token:
+          $ref: '#/components/schemas/token'
+        amount:
+          $ref: '#/components/schemas/amount'
+        card_acceptor:
+          allOf:
+            - $ref: '#/components/schemas/transaction_card_acceptor'
+      allOf:
+        - $ref: '#/components/schemas/CardTransactionSimulation'
+    AccountFundingAuthPlusCaptureEvent:
+      required:
+        - amount
+        - card_token
+      properties:
+        card_token:
+          $ref: '#/components/schemas/token'
+        amount:
+          $ref: '#/components/schemas/amount'
+        card_acceptor:
+          allOf:
+            - $ref: '#/components/schemas/transaction_card_acceptor'
+      allOf:
+        - $ref: '#/components/schemas/CardTransactionSimulation'
+    AccountFundingAuthPlusCaptureReversalEvent:
+      required:
+        - amount
+        - preceding_related_transaction_token
+      properties:
+        preceding_related_transaction_token:
+          $ref: '#/components/schemas/token'
+        amount:
+          $ref: '#/components/schemas/amount'
+        card_acceptor:
+          allOf:
+            - $ref: '#/components/schemas/transaction_card_acceptor'
+      allOf:
+        - $ref: '#/components/schemas/CardTransactionSimulation'
+    RefundEvent:
+      required:
+        - amount
+        - card_token
+      properties:
+        card_token:
+          $ref: '#/components/schemas/token'
+        amount:
+          $ref: '#/components/schemas/amount'
+        card_acceptor:
+          allOf:
+            - $ref: '#/components/schemas/transaction_card_acceptor'
+      allOf:
+        - $ref: '#/components/schemas/CardTransactionSimulation'
+    RefundAuthorizationEvent:
+      required:
+        - amount
+        - card_token
+      properties:
+        card_token:
+          $ref: '#/components/schemas/token'
+        amount:
+          $ref: '#/components/schemas/amount'
+        card_acceptor:
+          allOf:
+            - $ref: '#/components/schemas/transaction_card_acceptor'
+      allOf:
+        - $ref: '#/components/schemas/CardTransactionSimulation'
+    RefundAuthorizationReversalEvent:
+      required:
+        - amount
+        - preceding_related_transaction_token
+      properties:
+        preceding_related_transaction_token:
+          $ref: '#/components/schemas/token'
+        amount:
+          $ref: '#/components/schemas/amount'
+        card_acceptor:
+          allOf:
+            - $ref: '#/components/schemas/transaction_card_acceptor'
+      allOf:
+        - $ref: '#/components/schemas/CardTransactionSimulation'
+    RefundAuthorizationClearingEvent:
+      required:
+        - amount
+      properties:
+        amount:
+          $ref: '#/components/schemas/amount'
+        card_acceptor:
+          allOf:
+            - $ref: '#/components/schemas/transaction_card_acceptor'
+      allOf:
+        - $ref: '#/components/schemas/CardTransactionSimulation'
+    PindebitEvent:
+      required:
+        - card_token
+      properties:
+        card_token:
+          $ref: '#/components/schemas/token'
+        card_acceptor:
+          required:
+            - mid
+          properties:
+            mid:
+              type: string
+              description: The merchant identifier.
+          allOf:
+            - $ref: '#/components/schemas/transaction_card_acceptor'
+        account_name_verification:
+          $ref: '#/components/schemas/account_name_verification_model'
+      allOf:
+        - $ref: '#/components/schemas/CardTransactionSimulation'
+    PindebitCashbackEvent:
+      required:
+        - amount
+        - card_token
+        - cash_back_amount
+      properties:
+        card_token:
+          $ref: '#/components/schemas/token'
+        amount:
+          $ref: '#/components/schemas/amount'
+        card_acceptor:
+          required:
+            - mid
+          properties:
+            mid:
+              type: string
+              description: The merchant identifier.
+          allOf:
+            - $ref: '#/components/schemas/transaction_card_acceptor'
+      allOf:
+        - $ref: '#/components/schemas/CardTransactionSimulation'
+    PindebitRefundEvent:
+      required:
+        - amount
+        - card_token
+      properties:
+        card_token:
+          $ref: '#/components/schemas/token'
+        amount:
+          $ref: '#/components/schemas/amount'
+        card_acceptor:
+          required:
+            - mid
+          properties:
+            mid:
+              type: string
+              description: The merchant identifier.
+          allOf:
+            - $ref: '#/components/schemas/transaction_card_acceptor'
+      allOf:
+        - $ref: '#/components/schemas/CardTransactionSimulation'
+    PindebitAuthorizationEvent:
+      required:
+        - amount
+        - card_token
+      properties:
+        card_token:
+          $ref: '#/components/schemas/token'
+        amount:
+          $ref: '#/components/schemas/amount'
+        card_acceptor:
+          required:
+            - mid
+          properties:
+            mid:
+              type: string
+              description: The merchant identifier.
+          allOf:
+            - $ref: '#/components/schemas/transaction_card_acceptor'
+      allOf:
+        - $ref: '#/components/schemas/CardTransactionSimulation'
+    PindebitAuthorizationClearingEvent:
+      required:
+        - amount
+      properties:
+        amount:
+          $ref: '#/components/schemas/amount'
+        card_acceptor:
+          allOf:
+            - $ref: '#/components/schemas/transaction_card_acceptor'
+      allOf:
+        - $ref: '#/components/schemas/CardTransactionSimulation'
+    PindebitAuthorizationReversalEvent:
+      required:
+        - amount
+        - preceding_related_transaction_token
+      properties:
+        preceding_related_transaction_token:
+          $ref: '#/components/schemas/token'
+        amount:
+          $ref: '#/components/schemas/amount'
+        card_acceptor:
+          allOf:
+            - $ref: '#/components/schemas/transaction_card_acceptor'
+      allOf:
+        - $ref: '#/components/schemas/CardTransactionSimulation'
+    PindebitAtmWithdrawalEvent:
+      required:
+        - amount
+        - card_token
+      properties:
+        card_token:
+          $ref: '#/components/schemas/token'
+        amount:
+          $ref: '#/components/schemas/amount'
+        card_acceptor:
+          required:
+            - mid
+          properties:
+            mid:
+              type: string
+              description: The merchant identifier.
+          allOf:
+            - $ref: '#/components/schemas/transaction_card_acceptor'
+      allOf:
+        - $ref: '#/components/schemas/CardTransactionSimulation'
+    PindebitBalanceinquiryEvent:
+      allOf:
+        - $ref: '#/components/schemas/CardTransactionSimulation'
+    OriginalCreditAuthorizationEvent:
+      required:
+        - amount
+        - card_token
+      properties:
+        card_token:
+          $ref: '#/components/schemas/token'
+        amount:
+          $ref: '#/components/schemas/amount'
+        card_acceptor:
+          allOf:
+            - $ref: '#/components/schemas/transaction_card_acceptor'
+      allOf:
+        - $ref: '#/components/schemas/CardTransactionSimulation'
+    OriginalCreditAuthorizationClearingEvent:
+      required:
+        - amount
+      properties:
+        amount:
+          $ref: '#/components/schemas/amount'
+        card_acceptor:
+          allOf:
+            - $ref: '#/components/schemas/transaction_card_acceptor'
+      allOf:
+        - $ref: '#/components/schemas/CardTransactionSimulation'
+    OriginalCreditAuthPlusCaptureEvent:
+      required:
+        - amount
+        - card_token
+      properties:
+        card_token:
+          $ref: '#/components/schemas/token'
+        amount:
+          $ref: '#/components/schemas/amount'
+        card_acceptor:
+          allOf:
+            - $ref: '#/components/schemas/transaction_card_acceptor'
+      allOf:
+        - $ref: '#/components/schemas/CardTransactionSimulation'
+    OriginalCreditAuthPlusCaptureReversalEvent:
+      required:
+        - amount
+        - preceding_related_transaction_token
+      properties:
+        preceding_related_transaction_token:
+          $ref: '#/components/schemas/token'
+        amount:
+          $ref: '#/components/schemas/amount'
+        card_acceptor:
+          allOf:
+            - $ref: '#/components/schemas/transaction_card_acceptor'
+      allOf:
+        - $ref: '#/components/schemas/CardTransactionSimulation'
+    AuthorizationQuasiCashEvent:
+      required:
+        - amount
+        - card_token
+      properties:
+        card_token:
+          $ref: '#/components/schemas/token'
+        amount:
+          $ref: '#/components/schemas/amount'
+        card_acceptor:
+          required:
+            - mid
+          properties:
+            mid:
+              type: string
+              description: The merchant identifier.
+          allOf:
+            - $ref: '#/components/schemas/transaction_card_acceptor'
+      allOf:
+        - $ref: '#/components/schemas/CardTransactionSimulation'
+    AuthorizationClearingQuasiCashEvent:
+      required:
+        - amount
+      properties:
+        amount:
+          $ref: '#/components/schemas/amount'
+        card_acceptor:
+          allOf:
+            - $ref: '#/components/schemas/transaction_card_acceptor'
+      allOf:
+        - $ref: '#/components/schemas/CardTransactionSimulation'
+    AuthorizationAtmWithdrawalEvent:
+      required:
+        - amount
+        - card_token
+      properties:
+        card_token:
+          $ref: '#/components/schemas/token'
+        amount:
+          $ref: '#/components/schemas/amount'
+        card_acceptor:
+          required:
+            - mid
+          properties:
+            mid:
+              type: string
+              description: The merchant identifier.
+          allOf:
+            - $ref: '#/components/schemas/transaction_card_acceptor'
+      allOf:
+        - $ref: '#/components/schemas/CardTransactionSimulation'
+    AuthorizationClearingAtmWithdrawalEvent:
+      required:
+        - amount
+      properties:
+        amount:
+          $ref: '#/components/schemas/amount'
+        card_acceptor:
+          allOf:
+            - $ref: '#/components/schemas/transaction_card_acceptor'
+      allOf:
+        - $ref: '#/components/schemas/CardTransactionSimulation'
+    PindebitQuasiCashEvent:
+      required:
+        - amount
+        - card_token
+      properties:
+        card_token:
+          $ref: '#/components/schemas/token'
+        amount:
+          $ref: '#/components/schemas/amount'
+        card_acceptor:
+          required:
+            - mid
+          properties:
+            mid:
+              type: string
+              description: The merchant identifier.
+          allOf:
+            - $ref: '#/components/schemas/transaction_card_acceptor'
+      allOf:
+        - $ref: '#/components/schemas/CardTransactionSimulation'
+    AuthorizationCashbackEvent:
+      required:
+        - amount
+        - card_token
+        - cash_back_amount
+      properties:
+        card_token:
+          $ref: '#/components/schemas/token'
+        amount:
+          $ref: '#/components/schemas/amount'
+        card_acceptor:
+          required:
+            - mid
+          properties:
+            mid:
+              type: string
+              description: The merchant identifier.
+          allOf:
+            - $ref: '#/components/schemas/transaction_card_acceptor'
+      allOf:
+        - $ref: '#/components/schemas/CardTransactionSimulation'
+    transaction_card_acceptor:
+      type: object
+      properties:
+        mid:
+          maxLength: 15
+          minLength: 2
+          type: string
+          description: The merchant identifier.
+        mcc:
+          maxLength: 5
+          minLength: 0
+          type: string
+          description: Merchant category code (MCC).
+        name:
+          maxLength: 255
+          minLength: 0
+          type: string
+          description: Card acceptor's name.
+        address:
+          type: string
+          description: |-
+            Card acceptor's address.
+            May be returned if the request uses Transaction Model v1 of the Marqeta Core API.
+            Not returned for Transaction Model v2 requests.
+          x-allowableValues: 255 char max
+        city:
+          type: string
+          description: Card acceptor's city.
+          x-allowableValues: 255 char max
+        state:
+          maxLength: 2
+          type: string
+          description: |-
+            Two-character state, provincial, or territorial abbreviation.
+
+            For the complete list, see <</core-api/kyc-verification#_valid_state_provincial_territorial_and_federal_abbreviations, Valid state, provincial, territorial, and federal abbreviations>>.
+        postal_code:
+          maxLength: 10
+          minLength: 0
+          type: string
+          description: Card acceptor's postal code.
+        country_code:
+          maxLength: 40
+          type: string
+          description: |-
+            Card acceptor's country code.
+            May be returned if the request uses Transaction Model v2 of the Marqeta Core API.
+            Not returned for Transaction Model v1 requests.
+        poi:
+          $ref: '#/components/schemas/terminal_model'
+      description: Contains information about the merchant.
+      x-allowableValues: A valid `card_acceptor` object.
+    terminal_model:
+      type: object
+      properties:
+        tid:
+          type: string
+        partial_approval_capable:
+          type: string
+        cardholder_presence:
+          type: string
+        card_presence:
+          type: string
+        channel:
+          type: string
+        processing_type:
+          type: string
+        pin_present:
+          type: string
+    network_fee_model:
+      type: object
+      properties:
+        type:
+          type: string
+          description: The type of fee assessed by the card network.
+          enum:
+            - ISSUER_FEE
+            - SWITCH_FEE
+            - PINDEBIT_ASSOC_FEE
+            - ACQUIRER_FEE
+            - INTERCHANGE_FEE
+            - CUR_CONV_CARDHOLDER_FEE
+            - CUR_CONV_ISSUER_FEE
+            - CROSS_BORDER_ISSUER_FEE
+        amount:
+          type: number
+          description: The amount of the network fee.
+          x-allowableValues: 'Format: 0.00'
+        credit_debit:
+          type: string
+          description: |-
+            Indicates whether the fee is a credit or a debit.
+
+            * *C* indicates a credit
+            * *D* indicates a debit
+          enum:
+            - C
+            - D
+      description: Contains card network fees assessed against the cardholder.
+      x-allowableValues: A valid `fees` object.
+    fraud_view:
+      type: object
+      properties:
+        network:
+          $ref: '#/components/schemas/network_fraud_view'
+      description: Contains one or more fraud determinations by the card network that
+        apply to either the transaction or the cardholder's account.
+      x-allowableValues: '`issuer_processor`, `network_fraud_view`, `network_account_intelligence_score`'
+    network_fraud_view:
+      type: object
+      properties:
+        transaction_risk_score:
+          type: integer
+          description: |-
+            Network-provided risk score for the transaction.
+            A higher score indicates higher risk.
+            Useful for making authorization decisions.
+          format: int32
+          x-allowableValues: |-
+            Mastercard: 0-999
+
+            Visa: 1-99
+        transaction_risk_score_reason_code:
+          type: string
+          description: _(Mastercard only)_ Unique code that describes the main driver
+            of the `transaction_risk_score`.
+          x-allowableValues: 1-29
+        transaction_risk_score_reason_description:
+          type: string
+          description: _(Mastercard only)_ Description of the `transaction_risk_score_reason_code`.
+          x-allowableValues: 255 char max
+        account_risk_score:
+          type: string
+          description: |-
+            _(Visa only)_ Account holder risk condition code evaluated by the card network.
+            A higher score indicates a greater likelihood that the card number is compromised.
+          x-allowableValues: 1-9
+        account_risk_score_reason_code:
+          type: string
+          description: _(Visa only)_ Unique code that describes the main driver of
+            the `account_risk_score`.
+          x-allowableValues: 255 char max
+      description: Contains network-provided information about fraud determinations.
+      x-allowableValues: '`account_risk_score`, `account_risk_score_reason_code`,
+        `transaction_risk_score`, `transaction_risk_score_reason_code`, `transaction_risk_score_reason_description`'
+    token:
+      maxLength: 36
+      minLength: 0
+      type: string
+      description: Unique identifier of the card. Useful when a single account holder
+        has multiple cards.
+    card_options:
+      type: object
+      properties:
+        pin:
+          maxLength: 4
+          type: string
+          description: The PIN for the card.
+        cvv:
+          maxLength: 3
+          minLength: 3
+          type: string
+          description: The CVV2 number for the card.
+        card_present:
+          type: boolean
+          description: A value of `true` requires that the card be present for the
+            transaction.
+          default: true
+          x-allowableValues: '`true` or `false`'
+        expiration:
+          maxLength: 4
+          minLength: 4
+          type: string
+          description: The expiration date of the card.
+        billing_address:
+          $ref: '#/components/schemas/card_options_billing_address'
+      description: Contains attributes that govern card usage
+      x-allowableValues: A valid `card_options` object.
+    card_options_billing_address:
+      type: object
+      properties:
+        first_name:
+          type: string
+          description: Cardholder's first name.
+          x-allowableValues: To pass AVS, must match the first name on record
+        last_name:
+          type: string
+          description: Cardholder's last name.
+          x-allowableValues: To pass AVS, must match the last name on record
+        address:
+          type: string
+          description: Cardholder's address.
+          x-allowableValues: To pass AVS, must match the address on record
+        zip:
+          type: string
+          description: Cardholder's postal code.
+          x-allowableValues: To pass AVS, must match the postal code on record
+      description: Used for AVS (address verification system). The address-related
+        fields in this object are verified against known values.
+      x-allowableValues: A valid `billing_address` object.
+    pos:
+      type: object
+      properties:
+        partial_approval_capable:
+          type: boolean
+          description: Whether the card acceptor or terminal is capable of partial
+            approvals.
+          default: false
+          x-allowableValues: '`true` or `false`'
+        pan_entry_mode:
+          type: string
+          description: Entry mode used for transaction.
+          enum:
+            - MAG_STRIPE
+            - MANUAL
+            - MAG_STRIPE_CONTACTLESS
+            - CHIP
+            - CHIP_CONTACTLESS
+            - BAR_CODE
+            - OCR
+            - MICR
+            - CARD_ON_FILE
+            - CHIP_FALLBACK
+            - OTHER
+      description: |-
+        Contains information about the point of sale, including details on how the card was presented.
+        May be returned if the request uses Transaction Model v2 of the Marqeta Core API.
+        Not returned for Transaction model v1 requests.
+      x-allowableValues: A valid `pos` object
+    currency_conversion:
+      type: object
+      properties:
+        original_amount:
+          type: number
+          description: |-
+            Amount of the transaction in the currency in which it originated.
+
+            Returned if the transaction involves currency conversion.
+          x-allowableValues: 'Format: 0.00'
+        conversion_rate:
+          type: number
+          description: |-
+            Conversion rate between the origination currency and the settlement currency.
+
+            Returned when the transaction currency is different from the origination currency.
+          format: float
+          x-allowableValues: |-
+            Current conversion rate.
+
+            *NOTE:* A value of `0` or `1` indicates no conversion; the currencies are the same.
+        original_currency_code:
+          type: string
+          description: The three-digit ISO 4217 currency code.
+          x-allowableValues: A valid three-digit link:https://www.iso.org/iso-4217-currency-codes.html[ISO
+            4217 currency code, window="_blank"]
+      description: |-
+        Contains information from the card network about currency conversion, including the original currency of the transaction, the amount of the transaction in the origination currency, and the conversion rate.
+
+        Returned if the transaction involves currency conversion.
+      x-allowableValues: A valid `currency_conversion` object.
+    account_funding_request:
+      required:
+        - first_name
+        - funding_source
+        - receiver_account_type
+        - transaction_type
+      type: object
+      properties:
+        first_name:
+          type: string
+          description: Account holder's first name.
+          x-allowableValues: To pass AVS, must match the first name on record.
+        last_name:
+          type: string
+          description: Account holder's last name.
+          x-allowableValues: To pass AVS, must match the last name on record.
+        receiver_name:
+          type: string
+          description: Recipient's name.
+          x-allowableValues: To pass AVS, must match the name on record.
+        funding_source:
+          type: string
+          description: Describes the source of the funding.
+          enum:
+            - CREDIT
+            - DEBIT
+            - PREPAID
+            - DEPOSIT_ACCOUNT
+            - CASH
+            - MOBILE_MONEY_ACCOUNT
+            - NON_VISA_CREDIT
+            - CHECK
+            - ACH
+        receiver_account_type:
+          type: string
+          description: Identifies the account type used for the funding request.
+          enum:
+            - OTHER
+            - RTN_BANK_ACCOUNT
+            - IBAN
+            - CARD_ACCOUNT
+            - EMAIL
+            - PHONE_NUMBER
+            - BANK_ACCOUNT_NUMBER_AND_BANK_IDENTIFICATION_CODE
+            - WALLET_ID
+            - SOCIAL_NETWORK_ID
+        transaction_purpose:
+          type: string
+          description: Identifies the purpose of the transaction.
+          x-allowableValues: '`FAMILY_SUPPORT`, `REGULAR_LABOR_TRANSFERS`, `TRAVEL_AND_TOURISM`,
+            `EDUCATION`, `MEDICAL_TREATMENT`, `EMERGENCY_NEED`, `SAVINGS`, `GIFTS`,
+            `OTHER`, `SALARY`, `CROWD_LENDING`, `CRYPTO_CURRENCY`'
+        transaction_type:
+          type: string
+          description: Describes the type of transaction.
+          enum:
+            - ACCOUNT_TO_ACCOUNT
+            - PERSON_TO_PERSON
+            - WALLET_TRANSFER
+            - MONEY_TRANSFER_BY_BANK
+            - BUSINESS_TO_BUSINESS
+            - DISBURSEMENT
+            - GOVERNMENT_DISBURSEMENT
+            - GAMBLING_PAYOUT
+            - LOYALTY
+            - MERCHANT_DISBURSEMENT
+            - ONLINE_GAMBLING_PAYOUT
+            - PENSION_DISBURSEMENT
+            - PREPAID_LOADS
+            - CARD_BILL_PAYMENT
+            - BILL_PAYMENT
+            - CASH_CLAIM
+            - CASH_IN
+            - CASH_OUT
+            - MOBILE_AIR_TIME_PAYMENT
+            - MONEY_TRANSFER_BY_MERCHANT
+            - FACE_TO_FACE_MERCHANT_PAYMENT
+            - GOVERNMENT_PAYMENT
+            - PAYMENTS_GOODS_SERVICES
+            - FUNDS_TRANSFER
+            - GENERAL_BUSINESS_TO_BUSINESS_TRANSFER
+            - BUSINESS_TO_BUSINESS_TRANSFER
+            - CASH_DEPOSIT
+            - PURCHASE_REPAYMENT
+            - AFT_OR_OCT_ELIGIBILITY
+            - CONSUMER_BILL_PAYMENT
+            - REQUEST_TO_PAY
+            - LIQUID_ASSET
+            - FAST_REFUND
+            - GAMING_PAYMENT
+      description: Information used when funding an account.
+      x-allowableValues: A valid `account_funding` object.
+    original_credit:
+      type: object
+      properties:
+        funding_source:
+          type: string
+          description: Describes the source of the funding.
+          enum:
+            - CREDIT
+            - DEBIT
+            - PREPAID
+            - DEPOSIT_ACCOUNT
+            - CASH
+            - MOBILE_MONEY_ACCOUNT
+            - NON_VISA_CREDIT
+            - CHECK
+            - ACH
+        transaction_type:
+          type: string
+          description: Describes the type of transaction.
+          enum:
+            - ACCOUNT_TO_ACCOUNT
+            - PERSON_TO_PERSON
+            - WALLET_TRANSFER
+            - MONEY_TRANSFER_BY_BANK
+            - BUSINESS_TO_BUSINESS
+            - DISBURSEMENT
+            - GOVERNMENT_DISBURSEMENT
+            - GAMBLING_PAYOUT
+            - LOYALTY
+            - MERCHANT_DISBURSEMENT
+            - ONLINE_GAMBLING_PAYOUT
+            - PENSION_DISBURSEMENT
+            - PREPAID_LOADS
+            - CARD_BILL_PAYMENT
+            - BILL_PAYMENT
+            - CASH_CLAIM
+            - CASH_IN
+            - CASH_OUT
+            - MOBILE_AIR_TIME_PAYMENT
+            - MONEY_TRANSFER_BY_MERCHANT
+            - FACE_TO_FACE_MERCHANT_PAYMENT
+            - GOVERNMENT_PAYMENT
+            - PAYMENTS_GOODS_SERVICES
+            - FUNDS_TRANSFER
+            - GENERAL_BUSINESS_TO_BUSINESS_TRANSFER
+            - BUSINESS_TO_BUSINESS_TRANSFER
+            - CASH_DEPOSIT
+            - PURCHASE_REPAYMENT
+            - AFT_OR_OCT_ELIGIBILITY
+            - CONSUMER_BILL_PAYMENT
+            - REQUEST_TO_PAY
+            - GAMING_PAYMENT
+        sender_account_type:
+          type: string
+          description: The type of account from which the OCT draws funds.
+          enum:
+            - OTHER
+            - RTN_BANK_ACCOUNT
+            - IBAN
+            - CARD_ACCOUNT
+            - EMAIL
+            - PHONE_NUMBER
+            - BANK_ACCOUNT_NUMBER_AND_BANK_IDENTIFICATION_CODE
+            - WALLET_ID
+            - SOCIAL_NETWORK_ID
+        sender_name:
+          type: string
+          description: Full name of the sender.
+          x-allowableValues: 255 char max
+        screening_score:
+          type: string
+          description: |-
+            Sanctions screening score to assist with meeting Anti-Money Laundering (AML) obligations.
+
+            Higher scores indicate that the sender's data more closely resembles an entry on the regulatory watchlist.
+
+            A value of 999 means that no screening score is available.
+          x-allowableValues: 000-100 or 999
+      description: Contains information about an original credit transaction (OCT),
+        which enables the cardholder to receive funds on the specified card from an
+        external source via the card network.
+      x-allowableValues: Existing `original_credit` object
+    gpa_response:
+      required:
+        - amount
+        - created_time
+        - currency_code
+        - funding
+        - funding_source_token
+        - last_modified_time
+        - response
+        - state
+        - token
+        - transaction_token
+      type: object
+      properties:
+        amount:
+          type: number
+          description: Amount funded.
+          x-allowableValues: 'Format: 0.00'
+        created_time:
+          type: string
+          description: Date and time when the GPA order was created, in UTC.
+          format: date-time
+          x-allowableValues: |-
+            date-time
+
+            *Format:*   +
+            yyyy-MM-ddThh:mm:ssZ
+        currency_code:
+          type: string
+          description: The three-digit ISO 4217 currency code.
+          x-allowableValues: A valid three-digit link:https://www.iso.org/iso-4217-currency-codes.html[ISO
+            4217 currency code, window="_blank"]
+        fees:
+          type: array
+          description: |-
+            List of fees associated with the transaction.
+
+            This array is returned if it exists in the resource.
+          xml:
+            name: fees
+            wrapped: true
+          items:
+            $ref: '#/components/schemas/fee_detail'
+          x-allowableValues: Array of existing `fees` objects
+        funding:
+          $ref: '#/components/schemas/funding'
+        funding_source_address_token:
+          type: string
+          description: Unique identifier of the funding source address to use for
+            this order.
+          x-allowableValues: Existing `funding_source_address` token
+        funding_source_token:
+          type: string
+          description: Unique identifier of the funding source to use for this order.
+          x-allowableValues: Existing `funding_source_address` token
+        gateway_message:
+          type: string
+          description: |-
+            Message about the status of the funding request.
+            Useful for determining whether it was approved and completed successfully, declined by the gateway, or timed out.
+
+            This field is returned if it exists in the resource.
+          x-allowableValues: '`Approved or completed successfully`, `Declined by gateway`,
+            `Operation timeout`'
+        gateway_token:
+          type: integer
+          description: Unique identifier of the funding source to use for this order.
+          format: int64
+          x-allowableValues: Existing `gateway_token`
+        jit_funding:
+          $ref: '#/components/schemas/jit_funding_api'
+        last_modified_time:
+          type: string
+          description: Date and time when the `fees` object was last modified, in
+            UTC.
+          format: date-time
+          x-allowableValues: |-
+            date-time
+
+            *Format:*   +
+            yyyy-MM-ddThh:mm:ssZ
+        memo:
+          type: string
+          description: |-
+            Additional descriptive text.
+
+            This field is returned if it exists in the resource.
+          x-allowableValues: 99 char max
+        response:
+          $ref: '#/components/schemas/response'
+        state:
+          type: string
+          description: Current status of the funding transaction.
+          x-allowableValues: '`PENDING`, `CLEARED`, `COMPLETION`, `DECLINED`, `ERROR`,
+            `ALL`'
+        tags:
+          type: string
+          description: |-
+            Comma-delimited list of tags describing the order.
+
+            This field is returned if it exists in the resource.
+          x-allowableValues: 255 char max
+        token:
+          type: string
+          description: Unique identifier of the GPA order.
+          x-allowableValues: 36 char max
+        transaction_token:
+          type: string
+          description: Unique identifier of the transaction being funded.
+          x-allowableValues: 'Format: UUID'
+        user_token:
+          type: string
+          description: |-
+            Unique identifier of the user resource.
+
+            This field is returned if it exists in the resource.
+          x-allowableValues: Existing user resource token
+      description: |-
+        Contains information about a GPA order, including fees, funding sources, and addresses.
+        See <</core-api/gpa-orders, GPA Orders>> for more information.
+      xml:
+        name: gpa_response
+      x-allowableValues: Existing `gpa_order` object
+    jit_funding_api:
+      required:
+        - amount
+        - method
+        - token
+        - user_token
+      type: object
+      properties:
+        amount:
+          minimum: 0
+          exclusiveMinimum: false
+          type: number
+          description: Requested amount of funding.
+        balances:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/cardholder_balance'
+          description: Contains the GPA's balance details.
+          x-allowableValues: Existing `balances` object
+        business_token:
+          maxLength: 36
+          minLength: 0
+          type: string
+          description: Holder of the business account that was funded.
+        decline_reason:
+          type: string
+          description: Reason why the transaction was declined.
+          enum:
+            - INVALID_AMOUNT
+            - INSUFFICIENT_FUNDS
+            - TRANSACTION_NOT_PERMITTED
+            - SUSPECTED_FRAUD
+            - AMOUNT_LIMIT_EXCEEDED
+            - TRANSACTION_COUNT_LIMIT_EXCEEDED
+            - DUPLICATE_TRANSACTION
+            - INVALID_MERCHANT
+            - INVALID_CARD
+            - NO_CREDIT_ACCOUNT
+            - EXPIRED_CARD
+            - NO_CHECKING_ACCOUNT
+            - NO_SAVINGS_ACCOUNT
+            - STOP_PAYMENT
+            - REVOCATION_AUTHORIZATION_ORDER
+            - REVOCATION_ALL_AUTHORIZATION_ORDER
+            - SOFT_DECLINE_AUTHENTICATION_REQUIRED
+            - CLOSED_ACCOUNT
+            - SOFT_DECLINE_PIN_REQUIRED
+            - CARD_NOT_ACTIVE
+            - CARDHOLDER_NOT_ACTIVE
+        incremental_authorization_jit_funding_tokens:
+          type: array
+          description: |-
+            Array of tokens referencing the JIT Funding tokens of all previous associated incremental authorization JIT Funding requests.
+            Useful for ascertaining the final transaction amount when the original amount was incremented.
+          items:
+            type: string
+          x-allowableValues: Existing incremental authorization JIT Funding tokens
+        memo:
+          maxLength: 99
+          minLength: 0
+          type: string
+          description: Additional information that describes the JIT Funding transaction.
+        method:
+          type: string
+          description: |-
+            JIT Funding response type.
+            See <</core-api/gateway-jit-funding-messages#_the_jit_funding_object, The jit_funding object>> for the purpose, funding event type, and description of each method.
+          enum:
+            - pgfs.authorization
+            - pgfs.authorization.clearing
+            - pgfs.authorization.advice
+            - pgfs.authorization.incremental
+            - pgfs.authorization.capture
+            - pgfs.authorization.reversal
+            - pgfs.authorization.cashback
+            - pgfs.balanceinquiry
+            - pgfs.auth_plus_capture
+            - pgfs.refund
+            - pgfs.refund.authorization
+            - pgfs.refund.authorization.reversal
+            - pgfs.refund.authorization.clearing
+            - pgfs.force_capture
+            - pgfs.authorization.capture.chargeback
+            - pgfs.authorization.capture.chargeback.reversal
+            - pgfs.pindebit
+            - pgfs.pindebit.chargeback
+            - pgfs.pindebit.chargeback.reversal
+            - pgfs.pindebit.cashback
+            - pgfs.pindebit.refund
+            - pgfs.pindebit.authorization
+            - pgfs.pindebit.authorization.clearing
+            - pgfs.pindebit.authorization.reversal
+            - pgfs.pindebit.atm.withdrawal
+            - pgfs.pindebit.balanceinquiry
+            - pgfs.pindebit.quasi.cash
+            - pgfs.dispute.credit
+            - pgfs.dispute.debit
+            - pgfs.directdeposit.credit
+            - pgfs.directdeposit.debit
+            - pgfs.directdeposit.credit.reversal
+            - pgfs.directdeposit.debit.reversal
+            - pgfs.adjustment.credit
+            - pgfs.adjustment.debit
+            - pgfs.auth_plus_capture.standin
+            - pgfs.authorization.standin
+            - pgfs.network.load
+            - pgfs.original.credit.authorization
+            - pgfs.original.credit.auth_plus_capture
+            - pgfs.original.credit.authorization.clearing
+            - pgfs.original.credit.authorization.reversal
+            - pgfs.billpayment
+            - pgfs.billpayment.capture
+            - pgfs.billpayment.reversal
+            - pgfs.atm.withdrawal
+            - pgfs.atm.clearing.withdrawal
+            - pgfs.authorization.quasi.cash
+            - pgfs.authorization.clearing.quasi.cash
+            - pgfs.authorization.account_verification
+            - pgfs.product.inquiry
+        original_jit_funding_token:
+          maxLength: 36
+          minLength: 0
+          type: string
+          description: |-
+            Unique identifier of the first associated JIT Funding message.
+            Useful for correlating related JIT Funding messages (that is, those associated with the same GPA order).
+            Not included in the first of any set of related messages.
+        tags:
+          maxLength: 255
+          minLength: 0
+          type: string
+          description: Customer-defined tags related to the JIT Funding transaction.
+        token:
+          maxLength: 36
+          minLength: 0
+          type: string
+          description: |-
+            Existing JIT Funding token matching the `funding.gateway_log.transaction_id` field of the associated GPA order.
+            Note that the `transaction_id` field updates if a subsequent JIT Funding message associated with that GPA order is sent.
+            If multiple JIT Funding messages are associated with the same GPA order, the `transaction_id` field matches the token of the most recent message.
+        user_token:
+          maxLength: 36
+          minLength: 0
+          type: string
+          description: Holder of the user account that was funded.
+      description: Contains information about the JIT Funding load event, in which
+        funds are loaded into an account.
+      x-allowableValues: '`acting_user_token`, `address_verification`, `amount`, `balances`,
+        `business_token`, `decline_reason`, `incremental_authorization_jit_funding_tokens`,
+        `memo`, `method`, `original_jit_funding_token`, `tags`, `token`, `user_token`'
+    cardholder_balance:
+      required:
+        - available_balance
+        - balances
+        - cached_balance
+        - credit_balance
+        - currency_code
+        - last_updated_time
+        - ledger_balance
+        - pending_credits
+      type: object
+      properties:
+        available_balance:
+          type: number
+        balances:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/cardholder_balance'
+        cached_balance:
+          type: number
+        credit_balance:
+          type: number
+        currency_code:
+          type: string
+        impacted_amount:
+          type: number
+        last_updated_time:
+          type: string
+          format: date-time
+        ledger_balance:
+          type: number
+        pending_credits:
+          type: number
+    fee_detail:
+      required:
+        - fee
+        - token
+        - transaction_token
+      type: object
+      properties:
+        fee:
+          $ref: '#/components/schemas/fee'
+        memo:
+          maxLength: 99
+          minLength: 1
+          type: string
+          description: Additional text that describes the fee transfer.
+        tags:
+          maxLength: 255
+          minLength: 0
+          type: string
+          description: Descriptive metadata about the fee.
+        token:
+          maxLength: 36
+          minLength: 1
+          type: string
+          description: Unique identifier of the fee.
+        transaction_token:
+          type: string
+          description: Unique identifier of the fee transaction.
+          x-allowableValues: 36 char max
+    fee:
+      required:
+        - active
+        - amount
+        - created_time
+        - currency_code
+        - last_modified_time
+        - name
+        - token
+      type: object
+      properties:
+        active:
+          type: boolean
+          description: Indicates whether the fee is active.
+          default: false
+          x-allowableValues: '`true` or `false`'
+        amount:
+          type: number
+          description: Amount of the fee.
+          x-allowableValues: 'Format: 0.00'
+        created_time:
+          type: string
+          description: Date and time when the `fees` object was created, in UTC.
+          format: date-time
+          x-allowableValues: yyyy-MM-ddTHH:mm:ssZ
+        currency_code:
+          type: string
+          description: The three-digit ISO 4217 currency code.
+          x-allowableValues: A valid three-digit link:https://www.iso.org/iso-4217-currency-codes.html[ISO
+            4217 currency code, window="_blank"]
+        last_modified_time:
+          type: string
+          description: Date and time when the GPA order was last modified, in UTC.
+          format: date-time
+          x-allowableValues: 'Format: yyyy-MM-ddTHH:mm:ssZ'
+        name:
+          type: string
+          description: Name of the fee.
+          x-allowableValues: 50 char max
+        real_time_assessment:
+          $ref: '#/components/schemas/real_time_fee_assessment'
+        tags:
+          type: string
+          description: Descriptive metadata about the fee.
+          x-allowableValues: 255 char max
+        token:
+          type: string
+          description: Unique identifier of the `fees` object.
+          x-allowableValues: Existing `fees` object token
+      description: Contains details about the fee.
+      x-allowableValues: '`active`, `amount`, `created_time`, `currency_code`, `last_modified_time`,
+        `name`, `real_time_assessment`, `tags`, `token`'
+    real_time_fee_assessment:
+      type: object
+      properties:
+        domestic_enabled:
+          type: boolean
+          description: Enables fee assessments where the origin of the transaction
+            acquirer is inside the US.
+          default: false
+          x-allowableValues: '`true`, `false`'
+        international_enabled:
+          type: boolean
+          description: Enables fee assessments where the origin of the transaction
+            acquirer is outside the US.
+          default: false
+          x-allowableValues: '`true`, `false`'
+        transaction_type:
+          type: string
+          description: Indicates the type of transactions on which the fee is assessed.
+          x-allowableValues: '`authorization`, `pindebit.atm.withdrawal`, `pindebit`'
+      description: Controls the assessment of real-time fees.
+      x-allowableValues: '`domestic_enabled`, `international_enabled`, `transaction_type`'
+    funding:
+      required:
+        - source
+      type: object
+      properties:
+        amount:
+          type: number
+          description: Amount of funds loaded into the GPA.
+          x-allowableValues: 'Format: 0.00'
+        gateway_log:
+          $ref: '#/components/schemas/gateway_log_model'
+        source:
+          $ref: '#/components/schemas/funding_source_model'
+        source_address:
+          $ref: '#/components/schemas/CardholderAddressResponse'
+      description: Contains funding information for the transaction, including funding
+        amount, type, and time.
+      xml:
+        name: funding
+      x-allowableValues: '`amount`, `gateway_log`, `source`, `source_address`'
+    gateway_log_model:
+      required:
+        - message
+        - order_number
+        - transaction_id
+      type: object
+      properties:
+        duration:
+          type: integer
+          description: Length of time in milliseconds that the gateway took to respond
+            to a funding request.
+          format: int64
+          x-allowableValues: Any integer
+        message:
+          type: string
+          description: |-
+            Message about the status of the funding request.
+            Useful for determining whether it was approved and completed successfully, declined by the gateway, or timed out.
+          x-allowableValues: '`Approved or completed successfully`, `Declined by gateway`,
+            `Operation timeout`'
+        order_number:
+          type: string
+          description: Customer order number, same value as `transaction.token`.
+          x-allowableValues: Existing `transaction.token` value
+        timed_out:
+          type: boolean
+          description: Whether the gateway sent a response (`true`) or timed out (`false`).
+          default: false
+          x-allowableValues: '`true`, `false`'
+        transaction_id:
+          type: string
+          description: Customer-defined identifier for the transaction.
+          x-allowableValues: 255 char max
+      description: Contains information from the JIT Funding gateway in response to
+        a funding request.
+      xml:
+        name: gateway_log_model
+      x-allowableValues: '`duration`, `message`, `order_number`, `response`, `timed_out`,
+        `transaction_id`'
+    funding_source_model:
+      required:
+        - active
+        - created_time
+        - is_default_account
+        - last_modified_time
+        - token
+        - type
+      type: object
+      properties:
+        active:
+          type: boolean
+          description: Whether the funding source is active.
+          default: false
+          x-allowableValues: '`true`, `false`'
+        created_time:
+          type: string
+          description: Date and time when the funding source was created, in UTC.
+          format: date-time
+          x-allowableValues: 'Format: yyyy-MM-ddTHH:mm:ssZ'
+        is_default_account:
+          type: boolean
+          description: Whether the GPA order unload's funding source is the default
+            funding account.
+          default: false
+          x-allowableValues: '`true`, `false`'
+        last_modified_time:
+          type: string
+          description: Date and time when the funding source was last modified, in
+            UTC.
+          format: date-time
+          x-allowableValues: 'Format: yyyy-MM-ddTHH:mm:ssZ'
+        token:
+          type: string
+          description: Unique identifier of the funding source.
+          x-allowableValues: 'Format: UUID'
+        type:
+          type: string
+          description: Funding type of the funding source.
+          x-allowableValues: '`ach`, `paymentcard`'
+      description: Contains funding source information for the transaction, including
+        the funding type and time.
+      x-allowableValues: '`active`, `created_time`, `is_default_account`, `last_modified_time`,
+        `token`, `type`'
+    CardholderAddressResponse:
+      required:
+        - address_1
+        - city
+        - country
+        - created_time
+        - first_name
+        - last_modified_time
+        - last_name
+        - postal_code
+        - state
+        - token
+        - zip
+      type: object
+      properties:
+        active:
+          type: boolean
+          description: Whether the address is active.
+          default: false
+          x-allowableValues: '`true`, `false`'
+        address_1:
+          maxLength: 255
+          minLength: 0
+          type: string
+          description: Street address of the funding source.
+        address_2:
+          maxLength: 255
+          minLength: 0
+          type: string
+          description: |-
+            Additional address information for the funding source.
+
+            This field is returned if it exists in the resource.
+        business_token:
+          maxLength: 36
+          minLength: 1
+          type: string
+          description: |-
+            Unique identifier of the business account holder associated with the address.
+
+            This field is returned if it exists in the resource.
+            It is required if 'user_token' is not specified.
+        city:
+          maxLength: 40
+          minLength: 0
+          type: string
+          description: City of the funding source.
+        country:
+          maxLength: 40
+          minLength: 1
+          type: string
+          description: Country of the funding source.
+        created_time:
+          type: string
+          description: Date and time when the address was created, in UTC.
+          format: date-time
+          x-allowableValues: 'Format: yyyy-MM-ddTHH:mm:ssZ'
+        first_name:
+          maxLength: 40
+          minLength: 0
+          type: string
+          description: First name of the account holder associated with the funding
+            source.
+        is_default_address:
+          type: boolean
+          description: Whether this address is the default address used by the funding
+            source.
+          default: false
+          x-allowableValues: '`true`, `false`'
+        last_modified_time:
+          type: string
+          description: |-
+            Date and time when the address was last modified, in UTC.
+
+            This field is returned if it exists in the resource.
+          format: date-time
+          x-allowableValues: 'Format: yyyy-MM-ddTHH:mm:ssZ'
+        last_name:
+          maxLength: 40
+          minLength: 0
+          type: string
+          description: Last name of the account holder associated with the funding
+            source.
+        phone:
+          maxLength: 255
+          minLength: 0
+          type: string
+          description: |-
+            Phone number of the funding source.
+
+            This field is returned if it exists in the resource.
+        postal_code:
+          maxLength: 10
+          minLength: 0
+          type: string
+          description: Postal code of the funding source.
+        state:
+          maxLength: 2
+          minLength: 0
+          type: string
+          description: |-
+            Two-character state, provincial, or territorial abbreviation.
+
+            For the complete list, see <</core-api/kyc-verification#_valid_state_provincial_territorial_and_federal_abbreviations, Valid state, provincial, territorial, and federal abbreviations>>.
+        token:
+          maxLength: 36
+          minLength: 1
+          type: string
+          description: Unique identifier of the `funding_source_address` object.
+        user_token:
+          maxLength: 36
+          minLength: 1
+          type: string
+          description: |-
+            Unique identifier of the user account holder associated with the address.
+
+            This field is returned if it exists in the resource.
+            It is required if 'business_token' is not specified.
+        zip:
+          maxLength: 10
+          minLength: 0
+          type: string
+          description: United States ZIP code of the funding source.
+      description: Contains information about the billing address of the funding source.
+      x-allowableValues: '`active`, `address_1`, `address_2`, `business_token`, `city`,
+        `country`, `created_time`, `first_name`, `is_default_address`, `last_modified_time`,
+        `last_name`, `phone`, `postal_code`, `state`, `token`, `user_token`, `zip`'
+    TransactionModel:
+      title: TransactionModel
+      required:
+        - amount
+        - state
+        - token
+        - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: |-
+            Transaction event type.
+
+            For more information about the `type` field, see <</core-api/event-types#_transaction_events, Transaction events>>.
+          readOnly: true
+          enum:
+            - gpa.credit
+            - gpa.credit.pending
+            - gpa.credit.pending.reversal
+            - gpa.credit.reversal
+            - gpa.credit.networkload
+            - gpa.credit.networkload.reversal
+            - gpa.debit.networkload
+            - gpa.debit
+            - gpa.debit.pending
+            - gpa.debit.pending.reversal
+            - gpa.grant
+            - gpa.credit.issueroperator
+            - gpa.debit.issueroperator
+            - gpa.credit.chargeback
+            - gpa.credit.chargeback.reversal
+            - gpa.credit.billpayment
+            - gpa.credit.authorization.billpayment
+            - gpa.credit.authorization.billpayment.reversal
+            - authorization
+            - authorization.advice
+            - authorization.reversal
+            - authorization.clearing
+            - authorization.reversal.issuerexpiration
+            - dispute.credit
+            - dispute.debit
+            - authorization.clearing.chargeback
+            - authorization.clearing.chargeback.reversal
+            - refund
+            - pindebit.atm.withdrawal
+            - pindebit.balanceinquiry
+            - pindebit.cashback
+            - pindebit.checkavs
+            - pindebit
+            - programreserve.credit
+            - programreserve.debit
+            - fee.charge.pending
+            - fee.charge
+            - fee.charge.refund
+            - fee.charge.reversal
+            - funds.expire
+            - reward.earn
+            - transfer.peer
+            - transfer.fee
+            - account.funding.authorization
+            - account.funding.authorization.reversal
+            - account.funding.authorization.clearing
+            - account.funding.auth_plus_capture
+            - account.funding.auth_plus_capture.reversal
+            - account.credit
+            - account.debit
+            - balanceinquiry
+            - authorization.atm.withdrawal
+            - authorization.pin.change
+            - authorization.pin.unblock
+            - authorization.clearing.atm.withdrawal
+            - authorization.cashback
+            - authorization.clearing.cashback
+            - transfer.program
+            - authorization.quasi.cash
+            - authorization.clearing.quasi.cash
+            - authorization.incremental
+            - gpa.credit.authorization
+            - gpa.credit.authorization.reversal
+            - gpa.debit.authorization
+            - gpa.debit.reversal
+            - original.credit.authorization
+            - original.credit.authorization.reversal
+            - original.credit.authorization.clearing
+            - original.credit.auth_plus_capture
+            - original.credit.auth_plus_capture.reversal
+            - refund.authorization
+            - refund.authorization.advice
+            - refund.authorization.clearing
+            - refund.authorization.reversal
+            - token.activation-request
+            - token.advice
+            - pindebit.authorization
+            - pindebit.authorization.clearing
+            - pindebit.authorization.reversal
+            - pindebit.authorization.reversal.issuerexpiration
+            - authorization.standin
+            - authorization.clearing.chargeback.completed
+            - authorization.clearing.chargeback.provisional.credit
+            - authorization.clearing.chargeback.provisional.debit
+            - authorization.clearing.chargeback.writeoff
+            - directdeposit.credit
+            - directdeposit.credit.pending
+            - directdeposit.credit.reject
+            - directdeposit.credit.pending.reversal
+            - directdeposit.credit.reversal
+            - directdeposit.debit
+            - directdeposit.debit.pending
+            - directdeposit.debit.reject
+            - directdeposit.debit.reversal
+            - pin.change.reversal
+            - pin.change.reversal.advice
+            - directdeposit.debit.pending.reversal
+            - pindebit.chargeback
+            - pindebit.chargeback.completed
+            - pindebit.chargeback.provisional.credit
+            - pindebit.chargeback.provisional.debit
+            - pindebit.chargeback.reversal
+            - pindebit.chargeback.writeoff
+            - pindebit.pin.change
+            - pindebit.pin.unblock
+            - pindebit.credit.adjustment
+            - pindebit.quasicash
+            - pindebit.quasi.cash
+            - pindebit.refund
+            - pindebit.refund.reversal
+            - pindebit.reversal
+            - pindebit.transfer
+            - pushtocard.debit
+            - pushtocard.reversal
+            - credit.adjustment
+            - debit.adjustment
+            - pin.change.via.api
+            - product.inquiry
+            - transit.offer
+            - unknown
+        state:
+          type: string
+          description: |-
+            Current state of the transaction.
+
+            For more information about the `state` field, see <</developer-guides/about-transactions#_the_transaction_lifecycle, The transaction lifecycle>>.
+          enum:
+            - CLEARED
+            - COMPLETION
+            - DECLINED
+            - ERROR
+            - PENDING
+        token:
+          maxLength: 36
+          minLength: 1
+          type: string
+          description: |-
+            Unique identifier of the transaction, formatted as a UUID.
+
+            *NOTE:* For subsequent related transactions, this token value appears as the `preceding_related_transaction_token`.
+          readOnly: true
+          x-faker: datatype.uuid
+        user_token:
+          maxLength: 36
+          minLength: 0
+          type: string
+          description: Unique identifier of the user who owns the account that funded
+            the transaction; subsequent related transactions retain the same `user_token`
+            even if the card used to complete the transaction moves to another user.
+          x-faker: datatype.uuid
+        card_token:
+          maxLength: 36
+          minLength: 0
+          type: string
+          description: |-
+            Unique identifier of the card.
+            Useful when a single account holder has multiple cards.
+          x-faker: datatype.uuid
+        response:
+          $ref: '#/components/schemas/response'
+        created_time:
+          type: string
+          description: |-
+            Date and time when the Marqeta platform created the transaction entry, in UTC format.
+            For example, when Marqeta processed the clearing record for a refund.
+          format: date-time
+          x-allowableValues: |-
+            date-time
+
+            *Format:*   +
+            yyyy-MM-ddThh:mm:ssZ
+        user_transaction_time:
+          type: string
+          description: |-
+            Date and time when the user initiated the transaction, in UTC.
+            For example, when a merchant performed the original authorization for a refund.
+          format: date-time
+          x-allowableValues: |-
+            date-time
+
+            *Format:*   +
+            yyyy-MM-ddThh:mm:ssZ
+        settlement_date:
+          type: string
+          description: |-
+            Date and time when funds were moved for a transaction, in UTC.
+            For example, in the case of a refund, when funds were credited to the cardholder.
+          format: date-time
+          x-allowableValues: |-
+            date-time
+
+            *Format:*   +
+            yyyy-MM-ddThh:mm:ssZ
+        amount:
+          type: number
+          description: Amount of the transaction.
+          x-allowableValues: 'Format: 0.00'
+          x-faker: finance.amount
+        amount_to_be_released:
+          type: number
+          description: Amount to released following a financial advice.
+          x-allowableValues: 'Format: 0.00'
+        cash_back_amount:
+          type: number
+          description: The cashback amount requested.
+          x-allowableValues: 'Format: 0.00'
+        request_amount:
+          type: number
+          description: |-
+            Merchant-requested amount, including any fees.
+            This includes amount and cashback amount.
+          x-allowableValues: 'Format: 0.00'
+        gpa:
+          type: object
+          properties:
+            ledger_balance:
+              type: number
+              description: |-
+                When using standard funding: The funds that are available to spend immediately, including funds from any authorized transactions that have not yet cleared.
+                When using Just-in-Time (JIT) Funding: Authorized funds that are currently on hold, but not yet cleared.
+              x-allowableValues: 'Format: 0.00'
+              x-faker: finance.amount
+            available_balance:
+              type: number
+              description: |-
+                Ledger balance minus any authorized transactions that have not yet cleared.
+                Also known as the cardholder's purchasing power.
+                When using JIT Funding, this balance is usually equal to $0.00.
+              x-allowableValues: 'Format: 0.00'
+              x-faker: finance.amount
+            impacted_amount:
+              type: number
+              description: Balance change based on the amount of the transaction.
+              x-allowableValues: 'Format: 0.00'
+              x-faker: finance.amount
+          description: Contains information about the GPA balances and pending credits.
+          x-allowableValues: '`available_balance`, `balances`, `cached_balance`, `credit_balance`,
+            `currency_code`, `impacted_amount`, `last_updated_time`, `ledger_balance`,
+            `pending_credits`'
+        currency_code:
+          type: string
+          description: The three-digit ISO 4217 currency code.
+          x-allowableValues: A valid three-digit link:https://www.iso.org/iso-4217-currency-codes.html[ISO
+            4217 currency code, window="_blank"]
+          x-faker: finance.currencyCode[]
+        currency_conversion:
+          $ref: '#/components/schemas/currency_conversion'
+        preceding_related_transaction_token:
+          type: string
+          description: |-
+            Returned for final transaction types.
+
+            Unique identifier of the preceding related transaction.
+            Useful for identifying the transaction that preceded the current one.
+            For example, `authorization`, a temporary transaction type, precedes and is completed by `authorization.clearing`, a final transaction type.
+
+            In this case, the `authorization` token is returned with this field. See <</core-api/event-types#_transaction_events, Transaction events>> for details on which transaction types are temporary or final.
+          x-faker: datatype.uuid
+          x-allowableValues: UUID
+        network:
+          type: string
+          description: Indicates which card network was used to complete the transaction.
+          enum:
+            - VISA
+            - MASTERCARD
+            - PULSE
+            - DISCOVER
+        subnetwork:
+          type: string
+          description: Indicates which subnetwork used to complete the transaction.
+          enum:
+            - VISANET
+            - VISANETDEBIT
+            - VISAINTERLINK
+            - VISAPLUS
+            - MAESTRO
+            - CIRRUS
+            - MASTERCARDDEBIT
+        acquirer_fee_amount:
+          type: number
+          description: |-
+            Indicates the amount of the acquirer fee.
+            Account holders are sometimes charged an acquirer fee for card use at ATMs, fuel dispensers, and so on.
+          x-allowableValues: 'Format: 0.00'
+        fees:
+          type: array
+          description: |-
+            List of fees associated with the transaction.
+
+            This array is returned if it exists in the resource.
+          items:
+            $ref: '#/components/schemas/network_fee_model'
+          x-allowableValues: Array of existing `fees` objects
+        fraud:
+          $ref: '#/components/schemas/fraud_view'
+        card_acceptor:
+          $ref: '#/components/schemas/transaction_card_acceptor'
+        account_funding:
+          $ref: '#/components/schemas/account_funding_request'
+        gpa_order:
+          $ref: '#/components/schemas/gpa_response'
+        original_credit:
+          $ref: '#/components/schemas/original_credit'
+        account_name_verification:
+          $ref: '#/components/schemas/account_name_verification_model'
+      description: Contains information about the transaction.
+      x-allowableValues: Existing `transaction` object
+    amount:
+      minimum: 0
+      maximum: 1000000000
+      type: number
+      description: Amount of the transaction.
+    DirectDepositSimulationRequest:
+      required:
+        - account_number
+        - amount
+        - settlement_date
+      type: object
+      properties:
+        account_number:
+          type: string
+          description: The account number of the user to debit or credit.
+          x-allowableValues: An account number belonging to an active user with an
+            active card.
+        amount:
+          type: number
+          description: Amount of the transaction.
+          x-allowableValues: |-
+            Format: 0.00
+
+            Must be greater than zero
+        company_discretionary_data:
+          maxLength: 20
+          minLength: 0
+          type: string
+          description: Company-specific data provided by the direct deposit originator.
+        company_entry_description:
+          maxLength: 10
+          minLength: 0
+          type: string
+          description: Company-specific data provided by the direct deposit originator.
+        company_identification:
+          maxLength: 10
+          minLength: 0
+          type: string
+          description: Alphanumeric code that identifies the direct deposit originator.
+        company_name:
+          maxLength: 16
+          minLength: 0
+          type: string
+          description: Name of the direct deposit originator.
+        earlyPayEligible:
+          type: boolean
+          description: Indicates whether the transaction is eligible for early pay.
+          default: false
+          x-allowableValues: '`true`, `false`'
+        individual_identification_number:
+          maxLength: 22
+          minLength: 0
+          type: string
+          description: Accounting number by which the recipient is known to the direct
+            deposit originator.
+        individual_name:
+          maxLength: 35
+          minLength: 0
+          type: string
+          description: Identity of the direct deposit recipient.
+        settlement_date:
+          type: string
+          description: Date when the credit or debit is applied.
+          format: date-time
+          x-allowableValues: 'Format: yyyy-mm-ddThh:mm:ssZ'
+        standard_entry_class_code:
+          maxLength: 3
+          minLength: 0
+          type: string
+          description: Three-letter code identifying the type of entry.
+        type:
+          type: string
+          description: Whether funds are being debited from or credited to the account.
+          readOnly: true
+          enum:
+            - CREDIT
+            - DEBIT
+    DirectDepositSimulationResponse:
+      type: object
+      properties:
+        type:
+          type: string
+          description: Whether funds are being debited from or credited to the account.
+          enum:
+            - CREDIT
+            - DEBIT
+        state:
+          type: string
+          description: Current status of the direct deposit record.
+          enum:
+            - PENDING
+            - APPLIED
+            - REVERSED
+            - REJECTED
+        state_reason:
+          type: string
+          description: Explanation of why the direct deposit record is in the current
+            state.
+          x-allowableValues: 255 char max
+        state_reason_code:
+          type: string
+          description: A standard code describing the reason for the current state.
+          x-allowableValues: Three-character code
+        token:
+          type: string
+          description: Unique identifier of the direct deposit record.
+          x-allowableValues: Existing direct deposit record token.
+        user_token:
+          type: string
+          description: Unique identifier of the user associated with the direct deposit
+            record.
+          x-allowableValues: Existing user token
+        amount:
+          type: number
+          description: Amount being debited or credited.
+          x-allowableValues: Existing amount in 0.00 decimal format.
+        business_token:
+          type: string
+          description: Unique identifier of the business associated with the direct
+            deposit record.
+          x-allowableValues: Existing business token
+        company_discretionary_data:
+          type: string
+          description: Company-specific data provided by the direct deposit originator.
+          x-allowableValues: 20 char max
+        company_entry_description:
+          type: string
+          description: Description of the purpose of the direct deposit.
+          x-allowableValues: 10 char max
+        company_identification:
+          type: string
+          description: Alphanumeric code that identifies the direct deposit originator.
+          x-allowableValues: 10 char max
+        company_name:
+          type: string
+          description: Name of the direct deposit originator.
+          x-allowableValues: 16 char max
+        created_time:
+          type: string
+          description: Date and time when the deposit account was created.
+          format: date-time
+          x-allowableValues: 'Format: yyyy-MM-dd''T''HH:mm:ssZ'
+        direct_deposit_account_token:
+          type: string
+          description: Unique identifier of the affected deposit account.
+          x-allowableValues: 36 char max
+        individual_identification_number:
+          type: string
+          description: Accounting number by which the recipient is known to the direct
+            deposit originator.
+          x-allowableValues: 255 char max
+        individual_name:
+          type: string
+          description: Name of the direct deposit recipient.
+          x-allowableValues: 22 char max
+        last_modified_time:
+          type: string
+          description: Date and time when the direct deposit account was last modified.
+          format: date-time
+          x-allowableValues: |-
+            date-time
+
+            *Format:*   +
+            yyyy-MM-ddThh:mm:ssZ
+        settlement_date:
+          type: string
+          description: Date and time when the credit or debit is applied.
+          format: date-time
+          x-allowableValues: |-
+            date-time
+
+            *Format:*   +
+            yyyy-MM-ddThh:mm:ssZ
+        standard_entry_class_code:
+          type: string
+          description: Three-letter code identifying the type of entry.
+          x-allowableValues: '`ACK`, `ADV`, `ARC`, `ATX`, `BOC`, `CCD`, `CIE`, `COR`,
+            `CTX`, `DNE`, `ENR`, `IAT`, `MTE`, `POP`, `POS`, `PPD`, `RCK`, `SHR`,
+            `TEL`, `TRC`, `TRX`, `WEB`, `XCK`'
+
+
+    account_name_verification_model:
+      properties:
+        on_file:
+          $ref: '#/components/schemas/ani_information'
+        request:
+          $ref: '#/components/schemas/ani_information'
+        request_type:
+          enum:
+            - SENDER
+            - RECEIVER
+          type: string
+        response:
+          $ref: '#/components/schemas/response'
+      type: object
+
+    ani_information:
+      properties:
+        first_name:
+          type: string
+        last_name:
+          type: string
+        middle_name:
+          type: string
+      type: object
