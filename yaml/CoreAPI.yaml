@@ -236,6 +236,7 @@ tags:
   - name: Funds movement
   - name: gateways
   - name: Generic money transfers
+  - name: Google VCN digital wallet tokens
   - name: GPA fund transfers
   - name: gpa orders
   - name: health checks
@@ -14707,6 +14708,31 @@ paths:
       summary: Retrieve Click to Pay for Mastercard enrollment status
       tags:
         - Digital Wallets Management
+  /digitalwallets/postTokenizationAuthenticationDecision:
+    post:
+      description: "Use this endpoint to submit a post-tokenization authentication\
+        \ decision from the customer to MQ in a secure card on file scenario.  \n\
+        MQ validates the request, stores it, and forwards the authentication decision\
+        \ to Mastercard MDES in real time.  \nMQ then returns the MDES response back\
+        \ to the customer synchronously.  \nThis enables issuers to notify MDES of\
+        \ the cardholder’s authentication outcome following tokenization,  \nensuring\
+        \ that the token requestor receives timely and accurate decisioning."
+      operationId: postTokenizationAuthenticationDecision
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostTokenizationAuthenticationDecisionRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostTokenizationAuthenticationDecisionResponse'
+          description: Successful response
+      tags:
+        - Digital Wallets Management
   /digitalwallets/wpp/applePayJWT:
     post:
       description: Use this endpoint to add a card to Apple Wallet via a web application.
@@ -14998,7 +15024,7 @@ paths:
           name: sort_by
           required: false
           schema:
-            default: -createdTime
+            default: -id
             type: string
           style: form
         - description: Date when the digital wallet token becomes active.
@@ -15151,7 +15177,7 @@ paths:
           name: sort_by
           required: false
           schema:
-            default: -createdTime
+            default: -id
             type: string
           style: form
       responses:
@@ -33130,6 +33156,7 @@ components:
           type: integer
       type: object
     OrderScope:
+      description: Defines the scope of the AutoReload, either GPA or MSA
       properties:
         gpa:
           $ref: '#/components/schemas/gpa'
@@ -35205,6 +35232,64 @@ components:
         - REWARD
         - ALL
       type: string
+    PostTokenizationAuthenticationDecisionRequest:
+      additionalProperties: false
+      properties:
+        authRequestCorrelationId:
+          description: Correlates multiple authentication requests.
+          example: 550e8400-e29b-41d4-a716-446655440000
+          maxLength: 64
+          minLength: 1
+          type: string
+        authenticationMethod:
+          description: Authentication method used to verify the cardholder.
+          enum:
+            - Issuer Application
+            - Web Portal
+          example: Issuer Application
+          type: string
+        commentText:
+          description: Optional comment related to the decision.
+          example: Cardholder authentication performed post tokenization
+          maxLength: 500
+          type: string
+        decision:
+          description: Issuer decision after cardholder authentication.
+          enum:
+            - SUCCESS
+            - FAILED
+          example: SUCCESS
+          type: string
+        tokenUniqueReference:
+          description: Unique identifier of the token allocated to the card.
+          example: DWSPMC00000000010906a349d9ca4eb1a4d53e3c90a11d9c
+          maxLength: 64
+          minLength: 1
+          type: string
+      required:
+        - authenticationMethod
+        - decision
+        - tokenUniqueReference
+      type: object
+    PostTokenizationAuthenticationDecisionResponse:
+      additionalProperties: false
+      properties:
+        message:
+          description: Human-readable description of the outcome.
+          example: Authentication decision recorded and forwarded to Mastercard
+          maxLength: 255
+          type: string
+        status:
+          description: Indicates if the operation was successful.
+          enum:
+            - SUCCESS
+            - FAILED
+          example: SUCCESS
+          type: string
+      required:
+        - message
+        - status
+      type: object
     PrimaryContactInfoModel:
       properties:
         department:
@@ -36882,6 +36967,26 @@ components:
         - end_index
         - is_more
         - start_index
+      type: object
+    StrongCustomerAuthenticationModel:
+      description: Strong Customer Authentication information for contactless transactions
+      properties:
+        acquirer_exemption:
+          description: Acquirer exemption type for the transaction
+          enum:
+            - MERCHANT_INITIATED_TRANSACTION
+            - TRANSACTION_RISK_ANALYSIS
+            - RECURRING_PAYMENT
+            - LOW_VALUE_PAYMENT
+            - SCA_PERFORMED
+            - SECURE_CORPORATE_PAYMENT
+            - AUTHENTICATION_OUTAGE_EXCEPTION
+          type: string
+        issuer_exemption:
+          description: Issuer exemption type for the transaction
+          enum:
+            - LOW_VALUE_PAYMENT
+          type: string
       type: object
     SubstatusCreateReq:
       description: Contains information relevant to creating a substatus.
@@ -42395,6 +42500,9 @@ components:
 
             For more information about strong customer authentication, see <</core-api/card-products, Card Products>>.
           type: number
+        contactless_exemption_transaction_currency:
+          description: Indicates the currency type of the transaction.
+          type: string
         created_time:
           description: Date and time when the resource was created, in UTC.
           format: date-time
@@ -48389,7 +48497,6 @@ components:
           type: string
       required:
         - code
-        - memo
       type: object
     result:
       properties:
@@ -49658,6 +49765,8 @@ components:
           type: string
         store:
           $ref: '#/components/schemas/store_response_model'
+        strong_customer_authentication:
+          $ref: '#/components/schemas/StrongCustomerAuthenticationModel'
         subnetwork:
           description: |-
             Indicates which subnetwork was used to complete the transaction.
@@ -49803,7 +49912,6 @@ components:
             - pindebit.pin.change
             - pindebit.pin.unblock
             - pindebit.credit.adjustment
-            - pindebit.quasicash
             - pindebit.quasi.cash
             - pindebit.refund
             - pindebit.refund.reversal
