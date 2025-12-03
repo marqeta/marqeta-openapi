@@ -3339,6 +3339,18 @@ components:
           type: string
         pin_present:
           type: string
+        special_condition_indicator:
+          type: string
+          description: Indicates special conditions for the transaction.
+          enum:
+            - UNSPECIFIED
+            - CRYPTOCURRENCY_PURCHASE
+            - QUASI_CASH
+            - DEBT_PAYMENT
+            - CENTRAL_BANK_DIGITAL_CURRENCY_PURCHASE
+            - STABLECOIN_PURCHASE
+            - BLOCKCHAIN_NATIVE_TOKEN_PURCHASE
+            - NON_FUNGIBLE_TOKEN_PURCHASE
     network_fee_model:
       type: object
       properties:
@@ -3479,6 +3491,18 @@ components:
             approvals.
           default: false
           x-allowableValues: '`true` or `false`'
+        special_condition_indicator:
+          type: string
+          description: Indicates special conditions for the transaction.
+          enum:
+            - UNSPECIFIED
+            - CRYPTOCURRENCY_PURCHASE
+            - QUASI_CASH
+            - DEBT_PAYMENT
+            - CENTRAL_BANK_DIGITAL_CURRENCY_PURCHASE
+            - STABLECOIN_PURCHASE
+            - BLOCKCHAIN_NATIVE_TOKEN_PURCHASE
+            - NON_FUNGIBLE_TOKEN_PURCHASE
         pan_entry_mode:
           type: string
           description: Entry mode used for transaction.
