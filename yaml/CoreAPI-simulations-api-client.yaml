@@ -4869,7 +4869,6 @@ components:
             `CTX`, `DNE`, `ENR`, `IAT`, `MTE`, `POP`, `POS`, `PPD`, `RCK`, `SHR`,
             `TEL`, `TRC`, `TRX`, `WEB`, `XCK`'
 
-
     account_name_verification_model:
       properties:
         on_file:
@@ -4885,6 +4884,16 @@ components:
           $ref: '#/components/schemas/response'
       type: object
 
+    address_verification_model:
+      properties:
+        on_file:
+          $ref: '#/components/schemas/avs_information'
+        request:
+          $ref: '#/components/schemas/avs_information'
+        response:
+          $ref: '#/components/schemas/response'
+      type: object
+
     ani_information:
       properties:
         first_name:
@@ -4894,3 +4903,12 @@ components:
         middle_name:
           type: string
       type: object
+
+    avs_information:
+      properties:
+        postal_code:
+          type: string
+        street_address:
+          type: string
+      type: object
+      
