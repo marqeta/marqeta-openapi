@@ -536,6 +536,9 @@ tags:
 
       To receive a webhook notification when a statement is created, see <</core-api/event-types#_credit_account_statement_event, Credit account statement event>> in Event Types.
     name: Statements
+  - description: Internal endpoints for Marqeta operations use only. These endpoints
+      are not exposed to external customers.
+    name: Internal
   - description: |-
       // Conditional snippet for beta or internal content
       include::../../maturity-admonition-banner.adoc[]
@@ -4811,6 +4814,16 @@ paths:
               $ref: '#/components/schemas/PaymentStatus'
             type: array
           style: form
+        - description: |-
+            Unique identifier of the payment schedule by which to filter payments.
+            Returns only payments that were created by the specified payment schedule.
+          explode: true
+          in: query
+          name: payment_schedule_token
+          required: false
+          schema:
+            type: string
+          style: form
       responses:
         '200':
           content:
@@ -7626,7 +7639,7 @@ paths:
                 data:
                   - account_token: 019b3f13-751b-7aef-8a3c-8d57a3a229e7
                     amount: 12.5
-                    created_at: 2025-12-20 02:29:24
+                    created_time: 2025-12-20T02:29:24Z
                     merchant:
                       address:
                         city: Seattle
@@ -14663,33 +14676,33 @@ paths:
           content:
             application/json:
               example:
-                accountNumber: 4111111145551142
-                accountNumberType: TOKEN
-                billingAddress:
-                  addressLine1: 1000 Market Street
-                  addressLine2: Suite 101
-                  buildingNumber: 56
-                  city: San Francisco
-                  country: USA
-                  minorSubdivisionCode: CA
-                  postalCode: 94105
-                  state: CA
-                  streetName: 12
-                cardType: Visa Platinum
-                createdOn: 2025-06-21T13:00:00Z
-                currencyCode: USD
-                expirationDate: 2026-01
-                externalId: 63421837-d597-4f0f-89e4-930c1a7b9e85
-                id: a44c9553-e687-4f3c-b7e7-a4245d9f238e
-                issuerName: Bank A
-                lastFourDigits: 1142
-                lastUpdatedOn: 2025-06-22T15:12:00Z
-                nameOnCard: Alex Miller
-                preferredFor:
-                  - date: 2025-01-01
-                    type: RECEIVE
-                status: ACTIVE
-                type: CARD
+                - accountNumber: '4111111145551142'
+                  accountNumberType: TOKEN
+                  billingAddress:
+                    addressLine1: 1000 Main Street
+                    addressLine2: Suite 101
+                    buildingNumber: '56'
+                    city: Oakland
+                    country: USA
+                    minorSubdivisionCode: CA
+                    postalCode: '94607'
+                    state: CA
+                    streetName: '12'
+                  cardType: Visa Platinum
+                  createdOn: 2025-06-21T13:00:00.000Z
+                  currencyCode: USD
+                  expirationDate: 2026-01
+                  externalId: 63421837-d597-4f0f-89e4-930c1a7b9e85
+                  id: a44c9553-e687-4f3c-b7e7-a4245d9f238e
+                  issuerName: Bank A
+                  lastFourDigits: '1142'
+                  lastUpdatedOn: 2025-06-22T15:12:00.000Z
+                  nameOnCard: John Smith
+                  preferredFor:
+                    - date: 2026-01-01
+                      type: RECEIVE
+                  status: ACTIVE
+                  type: CARD
               schema:
                 $ref: '#/components/schemas/ads_cards_response'
           description: Success
@@ -14884,7 +14897,7 @@ paths:
         - Digital Wallets Management
     get:
       description: Use this endpoint to retrieve an existing payment credential.
-      operationId: getCardByCardToken
+      operationId: getPaymentCredentialsByAliasId
       parameters:
         - description: Unique identifier of an existing payment credential.
           explode: false
@@ -14919,33 +14932,33 @@ paths:
           content:
             application/json:
               example:
-                accountNumber: '4111111145551142'
-                accountNumberType: TOKEN
-                billingAddress:
-                  addressLine1: 1000 Market Street
-                  addressLine2: Suite 101
-                  buildingNumber: 56
-                  city: San Francisco
-                  country: USA
-                  minorSubdivisionCode: CA
-                  postalCode: '94105'
-                  state: CA
-                  streetName: 12
-                cardType: Visa Platinum
-                createdOn: 2025-06-21T13:00:00.645Z
-                currencyCode: USD
-                expirationDate: 2026-01
-                externalId: 63421837-d597-4f0f-89e4-930c1a7b9e85
-                id: a44c9553-e687-4f3c-b7e7-a4245d9f238e
-                issuerName: Bank A
-                lastFourDigits: 1142
-                lastUpdatedOn: 2025-06-22T15:12:00.322Z
-                nameOnCard: Alex Miller
-                preferredFor:
-                  - date: 2025-01-01
-                    type: RECEIVE
-                status: ACTIVE
-                type: CARD
+                - accountNumber: '4111111145551142'
+                  accountNumberType: TOKEN
+                  billingAddress:
+                    addressLine1: 1000 Main Street
+                    addressLine2: Suite 101
+                    buildingNumber: '56'
+                    city: Oakland
+                    country: USA
+                    minorSubdivisionCode: CA
+                    postalCode: '94607'
+                    state: CA
+                    streetName: '12'
+                  cardType: Visa Platinum
+                  createdOn: 2025-06-21T21:00:00.645Z
+                  currencyCode: USD
+                  expirationDate: 2026-01
+                  externalId: 63421837-d597-4f0f-89e4-930c1a7b9e85
+                  id: a44c9553-e687-4f3c-b7e7-a4245d9f238e
+                  issuerName: Bank A
+                  lastFourDigits: '1142'
+                  lastUpdatedOn: 2025-06-22T15:12:00.322Z
+                  nameOnCard: John Smith
+                  preferredFor:
+                    - date: 2025-01-01
+                      type: RECEIVE
+                  status: ACTIVE
+                  type: CARD
               schema:
                 $ref: '#/components/schemas/ads_cards_response'
           description: Success
@@ -29588,6 +29601,9 @@ paths:
 
         You can also use this endpoint to disable webhooks you no longer want to receive—there is no `DELETE` method available to remove unneeded webhooks.
         To disable a webhook, use this endpoint to set its `active` field to `false`.
+        After you disable a webhook, the Marqeta platform stops delivering event notifications to its endpoint.
+        This applies both to new events and to any retries that were pending when you disabled the webhook; pending retries are not delivered.
+        To resume delivery, set `active` back to `true`; only events that occur after re-activation are delivered.
 
         [NOTE]
         As shown in the example, `config.secret`, `config.basic_auth_username`, and `config.basic_auth_password` are masked in responses to this and all other requests.
@@ -31028,7 +31044,6 @@ components:
       required:
         - account_token
         - amount
-        - created_at
         - status
         - token
         - type
@@ -35020,6 +35035,13 @@ components:
         Applies to immediate payments only.
         Once the value is set to `ACTIVE`, it cannot be edited or deleted.
       properties:
+        ach_sec_code:
+          description: |
+            ACH Standard Entry Class (SEC) code for this payment. Only applies to ACH payments where ACH is managed by Marqeta.
+          enum:
+            - WEB
+            - TEL
+          type: string
         amount:
           description: Amount of the payment.
           minimum: 0
@@ -35077,6 +35099,14 @@ components:
           description: Unique identifier of the credit account on which the payment
             is made.
           maxLength: 36
+          type: string
+        ach_sec_code:
+          description: ACH Standard Entry Class (SEC) code for this payment. Only
+            applies to ACH payments where ACH is managed by Marqeta.
+          enum:
+            - WEB
+            - TEL
+          nullable: true
           type: string
         allocations:
           description: List of objects that contain information about how a payment
@@ -35265,6 +35295,14 @@ components:
     PaymentScheduleCreateReq:
       description: Information to create a payment schedule.
       properties:
+        ach_sec_code:
+          description: ACH Standard Entry Class (SEC) code for this payment schedule.
+            Only applies to ACH payments where ACH is managed by Marqeta.
+          enum:
+            - WEB
+            - TEL
+          nullable: true
+          type: string
         amount:
           description: |-
             Amount of the payment.
@@ -35350,6 +35388,14 @@ components:
         account_token:
           description: Unique identifier of the credit account on which the payment
             schedule is made.
+          type: string
+        ach_sec_code:
+          description: ACH Standard Entry Class (SEC) code for this payment schedule.
+            Only applies to ACH payments where ACH is managed by Marqeta.
+          enum:
+            - WEB
+            - TEL
+          nullable: true
           type: string
         amount:
           description: |-
@@ -41352,7 +41398,6 @@ components:
           format: date-time
           maxLength: 24
           minLength: 24
-          pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.000Z$
           type: string
         currencyCode:
           description: Three-digit ISO 4217 currency code for the payment credential.
@@ -41392,7 +41437,6 @@ components:
           format: date-time
           maxLength: 24
           minLength: 24
-          pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.000Z$
           type: string
         nameOnCard:
           description: Name on the card associated with the payment credential.
@@ -41455,7 +41499,6 @@ components:
           format: date-time
           maxLength: 24
           minLength: 24
-          pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.000Z$
           type: string
         currencyCode:
           description: Three-digit ISO 4217 currency code for the payment credential.
@@ -41495,7 +41538,6 @@ components:
           format: date-time
           maxLength: 24
           minLength: 24
-          pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.000Z$
           type: string
         nameOnCard:
           description: Name on the card associated with the payment credential.
@@ -41533,33 +41575,19 @@ components:
     ads_cards_response:
       description: Response containing the payment credentials associated with a Visa
         Alias Directory Service (ADS) alias.
-      properties:
-        GetPaymentCredentialsResponse:
-          description: |-
-            Response containing the payment credentials associated with a Visa Alias.
-
-            This array is returned if the Visa Alias exists and one or more payment credentials are linked to it.
-          items:
-            $ref: '#/components/schemas/ads_card_response'
-          maxItems: 2
-          minItems: 1
-          type: array
-      type: object
+      items:
+        $ref: '#/components/schemas/ads_card_response'
+      maxItems: 2
+      minItems: 1
+      type: array
     ads_cards_response.yaml:
       description: Response containing the payment credentials associated with a Visa
         Alias Directory Service (ADS) alias.
-      properties:
-        GetPaymentCredentialsResponse:
-          description: |-
-            Response containing the payment credentials associated with a Visa Alias.
-
-            This array is returned if the Visa Alias exists and one or more payment credentials are linked to it.
-          items:
-            $ref: '#/components/schemas/ads_card_response'
-          maxItems: 2
-          minItems: 1
-          type: array
-      type: object
+      items:
+        $ref: '#/components/schemas/ads_card_response'
+      maxItems: 2
+      minItems: 1
+      type: array
     ads_consent:
       description: Visa Alias Directory Service (ADS) consent information.
       properties:
@@ -52433,6 +52461,9 @@ components:
           type: string
         send_expiration_date:
           default: false
+          type: boolean
+        send_field_2_pan:
+          default: true
           type: boolean
         send_track_data:
           default: false
